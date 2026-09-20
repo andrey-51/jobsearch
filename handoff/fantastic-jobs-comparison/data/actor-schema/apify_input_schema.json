@@ -1,0 +1,519 @@
+{
+  "title": "Fantastic Jobs ATS API",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "timeRange": {
+      "title": "Time Range",
+      "type": "string",
+      "description": "Select the time range for job listings. You can choose between hourly (1h), daily (24h), weekly (7d), or backfill of all active jobs (great to get started, 6m). We strongly recommend running the Actor at the same time every hour/day/week to ensure that you get all jobs withou duplicates",
+      "enum": [
+        "1h",
+        "24h",
+        "7d",
+        "6m"
+      ],
+      "default": "7d"
+    },
+    "limit": {
+      "title": "Maximum Jobs per API call",
+      "type": "integer",
+      "description": "Maximum number of jobs to return per run. The minimum is 10 and the maximum is 5,000. Please set the memory to 1GB for runs above 2,000 jobs.",
+      "minimum": 10,
+      "maximum": 5000,
+      "default": 10
+    },
+    "includeCompanyDetails": {
+      "title": "Include Company Data Fields",
+      "type": "boolean",
+      "description": "Include basic company data fields (LinkedIn, Crunchbase, logo). We use AI to map each job to a LinkedIn organization. We map over 95% of all jobs with 99% accuracy."
+    },
+    "titleSearch": {
+      "title": "Title Search",
+      "type": "array",
+      "description": "Array of job titles to search for. Use :* for prefix matching (e.g., 'Soft:*' will match 'Software', 'Softball', etc.)",
+      "editor": "stringList"
+    },
+    "titleExclusionSearch": {
+      "title": "Title Exclusion Search",
+      "type": "array",
+      "description": "Array of job titles to exclude. Use :* for prefix matching (e.g., 'Soft:*' will match 'Software', 'Softball', etc.)",
+      "editor": "stringList"
+    },
+    "locationSearch": {
+      "title": "Location Search",
+      "type": "array",
+      "description": "Array of locations to search for. Location search uses phrase matching, so you must use the exact 'City, State/Region, Country' format. All locations use English names (e.g., 'Munich' not 'M\u00fcnchen', 'Bavaria' not 'Bayern'). For the UK, use the constituent country as the state (e.g., 'London, England, United Kingdom', 'Edinburgh, Scotland, United Kingdom'). For the US, use the full state name (e.g., 'New York, New York, United States', 'San Francisco, California, United States'). You can also search by just a country (e.g., 'United Kingdom') or a city (e.g., 'London'). Do not use abbreviations (NY, US, UK). Use :* for prefix matching (e.g., 'New:*' will match 'New York', 'New Jersey', etc.). If anything is unclear, please create an issue.",
+      "editor": "stringList"
+    },
+    "locationExclusionSearch": {
+      "title": "Location Exclusion Search",
+      "type": "array",
+      "description": "Array of locations to exclude. Location search uses phrase matching, so you must use the exact 'City, State/Region, Country' format. All locations use English names. For the UK, use the constituent country as the state (e.g., 'London, England, United Kingdom'). Do not use abbreviations (NY, US, UK). Use :* for prefix matching (e.g., 'New:*' will match 'New York', 'New Jersey', etc.). If anything is unclear, please create an issue.",
+      "editor": "stringList"
+    },
+    "descriptionSearch": {
+      "title": "Description Search (includes title)",
+      "type": "array",
+      "description": "Warning, this search might be too intenstive for the 6m backfill API. Please be very specific, limit your searches to a handful of keywords, and combine with one of the other searches, preferably titleSearch. Array of terms to search in job title & description. Use :* for prefix matching (e.g., 'Python:*' will match 'Python', 'Pythonic', etc.)",
+      "editor": "stringList"
+    },
+    "descriptionExclusionSearch": {
+      "title": "Description Exclusion Search (includes title)",
+      "type": "array",
+      "description": "Warning, this search might be too intenstive for the 6m backfill API. Please be very specific, limit your searches to a handful of keywords, and combine with one of the other searches, preferably titleSearch. Array of terms to exclude from job title & description. Use :* for prefix matching (e.g., 'Python:*' will match 'Python', 'Pythonic', etc.)",
+      "editor": "stringList"
+    },
+    "organizationSearch": {
+      "title": "Organization Search",
+      "type": "array",
+      "description": "Array of organization names to search for. Use :* for prefix matching (e.g., 'Google:*' will match 'Google', 'Google Cloud', etc.) Getting several companies with the same name? Use the liOrganizationSlugFilter to filter by LinkedIn organization slugs.",
+      "editor": "stringList"
+    },
+    "organizationExclusionSearch": {
+      "title": "Organization Exclusion Search",
+      "type": "array",
+      "description": "Array of organization names to exclude. Use :* for prefix matching (e.g., 'Google:*' will match 'Google', 'Google Cloud', etc.) Getting several companies with the same name? Use the liOrganizationSlugExclusionFilter to filter by LinkedIn organization slugs.",
+      "editor": "stringList"
+    },
+    "domainFilter": {
+      "title": "Domain Filter",
+      "type": "array",
+      "description": "Array of company domains to search for. Requires an exact match.",
+      "editor": "stringList"
+    },
+    "domainExclusionFilter": {
+      "title": "Domain Exclusion Filter",
+      "type": "array",
+      "description": "Array of company domains to exclude. Requires an exact match.",
+      "editor": "stringList"
+    },
+    "descriptionType": {
+      "title": "Description Type",
+      "type": "string",
+      "description": "Format of the job description",
+      "enum": [
+        "text",
+        "html"
+      ],
+      "default": "text"
+    },
+    "ats": {
+      "title": "ATS",
+      "type": "array",
+      "description": "Filter jobs by one ore more ATS.",
+      "editor": "select",
+      "items": {
+        "type": "string",
+        "enum": [
+          "adp",
+          "applicantpro",
+          "ashby",
+          "bamboohr",
+          "breezy",
+          "careerplug",
+          "comeet",
+          "csod",
+          "dayforce",
+          "deel",
+          "dover",
+          "eightfold",
+          "firststage",
+          "freshteam",
+          "gem",
+          "gohire",
+          "greenhouse",
+          "hibob",
+          "hirebridge",
+          "hirehive",
+          "hireology",
+          "hiringthing",
+          "icims",
+          "isolved",
+          "jazzhr",
+          "jobvite",
+          "join.com",
+          "kula",
+          "lever.co",
+          "manatal",
+          "oraclecloud",
+          "pageup",
+          "paradox",
+          "paycom",
+          "paycor",
+          "paylocity",
+          "personio",
+          "phenompeople",
+          "pinpoint",
+          "polymer",
+          "recruitee",
+          "recooty",
+          "rippling",
+          "rival",
+          "smartrecruiters",
+          "successfactors",
+          "taleo",
+          "teamtailor",
+          "trakstar",
+          "trinet",
+          "ultipro",
+          "werecruit",
+          "workable",
+          "workday",
+          "zoho"
+        ]
+      }
+    },
+    "atsExclusionFilter": {
+      "title": "ATS Exclusion Filter",
+      "type": "array",
+      "description": "Exclude jobs from one or more ATS.",
+      "editor": "select",
+      "items": {
+        "type": "string",
+        "enum": [
+          "adp",
+          "applicantpro",
+          "ashby",
+          "bamboohr",
+          "breezy",
+          "careerplug",
+          "comeet",
+          "csod",
+          "dayforce",
+          "deel",
+          "dover",
+          "eightfold",
+          "firststage",
+          "freshteam",
+          "gem",
+          "gohire",
+          "greenhouse",
+          "hibob",
+          "hirebridge",
+          "hirehive",
+          "hireology",
+          "hiringthing",
+          "icims",
+          "isolved",
+          "jazzhr",
+          "jobvite",
+          "join.com",
+          "kula",
+          "lever.co",
+          "manatal",
+          "oraclecloud",
+          "pageup",
+          "paradox",
+          "paycom",
+          "paycor",
+          "paylocity",
+          "personio",
+          "phenompeople",
+          "pinpoint",
+          "polymer",
+          "recruitee",
+          "recooty",
+          "rippling",
+          "rival",
+          "smartrecruiters",
+          "successfactors",
+          "taleo",
+          "teamtailor",
+          "trakstar",
+          "trinet",
+          "ultipro",
+          "werecruit",
+          "workable",
+          "workday",
+          "zoho"
+        ]
+      }
+    },
+    "aiEmploymentTypeFilter": {
+      "title": "AI Employment Type",
+      "type": "array",
+      "description": "Filter by employment type",
+      "editor": "select",
+      "items": {
+        "type": "string",
+        "enum": [
+          "FULL_TIME",
+          "PART_TIME",
+          "CONTRACTOR",
+          "TEMPORARY",
+          "INTERN",
+          "VOLUNTEER",
+          "PER_DIEM",
+          "OTHER"
+        ]
+      }
+    },
+    "aiWorkArrangementFilter": {
+      "title": "AI Work Arrangement",
+      "type": "array",
+      "description": "Filter by work arrangement. Remote OK = remote with an office available. Remote Solely = remote with no office available. Include both to include all remote jobs.",
+      "editor": "select",
+      "items": {
+        "type": "string",
+        "enum": [
+          "On-site",
+          "Hybrid",
+          "Remote OK",
+          "Remote Solely"
+        ]
+      }
+    },
+    "hasSalary": {
+      "title": "Has Salary",
+      "type": "boolean",
+      "description": "Filter for jobs with salary information only. Set to false to include all jobs. Results include jobs that have either an AI enriched salary or a raw salary (discovered in the job posting schema)."
+    },
+    "aiExperienceLevelFilter": {
+      "title": "AI Experience Level",
+      "type": "array",
+      "description": "Filter by years of experience",
+      "editor": "select",
+      "items": {
+        "type": "string",
+        "enum": [
+          "0-2",
+          "2-5",
+          "5-10",
+          "10+"
+        ]
+      }
+    },
+    "aiVisaSponsorshipFilter": {
+      "title": "AI Visa Sponsorship",
+      "type": "boolean",
+      "description": "Filter for jobs offering visa sponsorship only. Set to false to include all jobs."
+    },
+    "aiTaxonomiesFilter": {
+      "title": "AI Taxonomies Filter",
+      "type": "array",
+      "description": "Filter by AI taxonomies",
+      "editor": "select",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Technology",
+          "Healthcare",
+          "Management & Leadership",
+          "Finance & Accounting",
+          "Human Resources",
+          "Sales",
+          "Marketing",
+          "Customer Service & Support",
+          "Education",
+          "Legal",
+          "Engineering",
+          "Science & Research",
+          "Trades",
+          "Construction",
+          "Manufacturing",
+          "Logistics",
+          "Creative & Media",
+          "Hospitality",
+          "Environmental & Sustainability",
+          "Retail",
+          "Data & Analytics",
+          "Software",
+          "Energy",
+          "Agriculture",
+          "Social Services",
+          "Administrative",
+          "Government & Public Sector",
+          "Art & Design",
+          "Food & Beverage",
+          "Transportation",
+          "Consulting",
+          "Sports & Recreation",
+          "Security & Safety"
+        ]
+      }
+    },
+    "aiTaxonomiesPrimaryFilter": {
+      "title": "AI Taxonomies Primary Filter",
+      "type": "array",
+      "description": "Filter by primary AI taxonomy",
+      "editor": "select",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Technology",
+          "Healthcare",
+          "Management & Leadership",
+          "Finance & Accounting",
+          "Human Resources",
+          "Sales",
+          "Marketing",
+          "Customer Service & Support",
+          "Education",
+          "Legal",
+          "Engineering",
+          "Science & Research",
+          "Trades",
+          "Construction",
+          "Manufacturing",
+          "Logistics",
+          "Creative & Media",
+          "Hospitality",
+          "Environmental & Sustainability",
+          "Retail",
+          "Data & Analytics",
+          "Software",
+          "Energy",
+          "Agriculture",
+          "Social Services",
+          "Administrative",
+          "Government & Public Sector",
+          "Art & Design",
+          "Food & Beverage",
+          "Transportation",
+          "Consulting",
+          "Sports & Recreation",
+          "Security & Safety"
+        ]
+      }
+    },
+    "aiTaxonomiesExclusionFilter": {
+      "title": "AI Taxonomies Exclusion Filter (warning: this filter is very broad)",
+      "type": "array",
+      "description": "Exclude jobs by AI taxonomies. Warning: this filter is very broad and will exclude jobs that are not in any of the selected taxonomies. For example, 'Healthcare' might exclude Software Engineer job in Healthcare. Use inclusive filters to avoid this.",
+      "editor": "select",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Technology",
+          "Healthcare",
+          "Management & Leadership",
+          "Finance & Accounting",
+          "Human Resources",
+          "Sales",
+          "Marketing",
+          "Customer Service & Support",
+          "Education",
+          "Legal",
+          "Engineering",
+          "Science & Research",
+          "Trades",
+          "Construction",
+          "Manufacturing",
+          "Logistics",
+          "Creative & Media",
+          "Hospitality",
+          "Environmental & Sustainability",
+          "Retail",
+          "Data & Analytics",
+          "Software",
+          "Energy",
+          "Agriculture",
+          "Social Services",
+          "Administrative",
+          "Government & Public Sector",
+          "Art & Design",
+          "Food & Beverage",
+          "Transportation",
+          "Consulting",
+          "Sports & Recreation",
+          "Security & Safety"
+        ]
+      }
+    },
+    "populateAiRemoteLocation": {
+      "title": "Populate AI Remote Location",
+      "type": "boolean",
+      "description": "If enabled, populates ai_remote_location with locations_derived when ai_remote_location is empty.",
+      "default": false
+    },
+    "populateAiRemoteLocationDerived": {
+      "title": "Populate AI Remote Location Derived",
+      "type": "boolean",
+      "description": "If enabled, populates ai_remote_location_derived with locations_derived when ai_remote_location_derived is empty.",
+      "default": false
+    },
+    "removeAgency": {
+      "title": "Remove Agency Jobs",
+      "type": "boolean",
+      "description": "Filter out recruitment agencies"
+    },
+    "liIndustryFilter": {
+      "title": "LinkedIn Industries",
+      "type": "array",
+      "description": "Filter by LinkedIn industries",
+      "editor": "stringList"
+    },
+    "liOrganizationEmployeesLte": {
+      "title": "LinkedIn Max Employees",
+      "type": "integer",
+      "description": "Maximum number of employees in the company",
+      "minimum": 0
+    },
+    "liOrganizationEmployeesGte": {
+      "title": "LinkedIn Min Employees",
+      "type": "integer",
+      "description": "Minimum number of employees in the company",
+      "minimum": 0
+    },
+    "datePostedAfter": {
+      "title": "Date Posted After",
+      "type": "string",
+      "editor": "textfield",
+      "description": "We don't recommend using this parameter if you retrieve jobs on a regular interval with the 1h/24h/7d time range. Filter jobs posted on or after a specific date. The correct format is '2025-01-01'. To include time, use the following syntax: '2025-01-01T14:00:00'. Warning, several ATS don't include time and default to 00:00. Please keep in mind that the jobs posted date/time is UTC and there's a 1 to 2 hour delay before jobs appear on this API. Please be wary of duplicate jobs when using this filter."
+    },
+    "liIndustryExclusionFilter": {
+      "title": "LinkedIn Industries Exclusion Filter",
+      "type": "array",
+      "description": "Exclude jobs from these LinkedIn industries. Same exact, case-sensitive matching as LinkedIn Industries.",
+      "editor": "stringList"
+    },
+    "liOrganizationSizeFilter": {
+      "title": "LinkedIn Company Size",
+      "type": "array",
+      "description": "Filter by LinkedIn company-size bucket (matches the org_linkedin_size field).",
+      "editor": "select",
+      "items": {
+        "type": "string",
+        "enum": [
+          "1",
+          "2-10",
+          "11-50",
+          "51-200",
+          "201-500",
+          "501-1000",
+          "1001-5000",
+          "5001-10000",
+          "10001+"
+        ]
+      }
+    },
+    "aiLanguageFilter": {
+      "title": "AI Language",
+      "type": "array",
+      "description": "Filter by the AI-detected language of the job description (e.g. English, French, German, Spanish). Matches the ai_job_language field.",
+      "editor": "stringList"
+    },
+    "hasNoLocation": {
+      "title": "Has No Location",
+      "type": "boolean",
+      "description": "When true, returns only jobs with no normalized location (locations_derived is null). Do not combine with location search, which would always return zero rows.",
+      "default": false
+    },
+    "includeLinkedIn": {
+      "title": "Include LinkedIn Company Data Fields (deprecated, use includeCompanyDetails)",
+      "type": "boolean",
+      "description": "Deprecated alias of includeCompanyDetails with the same functionality. Include basic company data fields. We use AI to map each job to a LinkedIn organization. We map over 95% of all jobs with 99% accuracy."
+    },
+    "remote only (legacy)": {
+      "title": "Remote Only (deprecated, use AI Work Arrangement)",
+      "type": "boolean",
+      "description": "Deprecated in favor of AI Work Arrangement (aiWorkArrangementFilter). When set to true, this is translated to ai_work_arrangement=Remote OK,Remote Solely. If you set AI Work Arrangement explicitly, this parameter is ignored. Set to false to include all jobs."
+    },
+    "aiHasSalary": {
+      "title": "AI Has Salary (deprecated, use hasSalary)",
+      "type": "boolean",
+      "description": "Deprecated alias of hasSalary with the same functionality. Filter for jobs with salary information only. Set to false to include all jobs. Results include jobs that have either an AI enriched salary or a raw salary (discovered in the job posting schema)."
+    }
+  }
+}
