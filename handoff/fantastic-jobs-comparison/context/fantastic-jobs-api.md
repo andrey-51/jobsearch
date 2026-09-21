@@ -45,13 +45,13 @@ RapidAPI docs and correct it. It exists to save you a first pass.
 | `titleExclusionSearch` | `title_exclude_filter`, or a `NOT` clause inside `title_filter` | whether a separate parameter exists at all |
 | `locationSearch` | `location_filter` | array vs OR-joined string |
 | `aiExperienceLevelFilter: ["5-10","10+"]` | `ai_experience_level_filter` | exact value spellings |
-| `liIndustryExclusionFilter` (36 industries) | `li_industry_filter` with negation, or `organization_exclude` | **most likely to differ** |
+| `liIndustryExclusionFilter` (37 industries) | `li_industry_filter` with negation, or `organization_exclude` | **most likely to differ** |
 | `timeRange: "24h"` | `date_filter` / a `date_created` lower bound, ISO 8601 | which date field it binds to |
 | `includeCompanyDetails: true` | `include_ai` / `description_type` / an org-enrichment flag | whether `org_linkedin_*` needs a higher tier |
 | `limit: 100` | `limit` + `offset` | max page size; offset vs cursor pagination |
 | `removeAgency: false` | `org_linkedin_recruitment_agency_derived` filter | — |
 
-**The 36-industry exclusion list is the single most likely source of a spurious difference.**
+**The industry exclusion list is the single most likely source of a spurious difference.**
 If you cannot reproduce it server-side, filter both sides client-side on
 `org_linkedin_industry` and state that you did.
 

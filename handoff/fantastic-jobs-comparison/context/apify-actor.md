@@ -60,11 +60,20 @@ smartrecruiters 8, oraclecloud 7, teamtailor 7, workable 7, remainder spread thi
   Intern, Graduate, VP, Vice President
 - `locationSearch`: London England United Kingdom; United Kingdom
 - `aiExperienceLevelFilter`: 5-10, 10+
-- `liIndustryExclusionFilter`: 36 industries (agencies, recruiting, retail, manufacturing,
+- `liIndustryExclusionFilter`: 37 industries (agencies, recruiting, retail, manufacturing,
   healthcare, education, government, financial services, IT consulting, and others)
 - `limit`: 100
 - `timeRange`: 24h
 - `includeCompanyDetails`: true
+
+## Two input files
+
+- `data/apify_input.json` — what the four baseline runs actually used. **Use this one for the
+  comparison.** Do not substitute the revised file; the baseline was produced with this input.
+- `data/apify_input_revised_2026-09-21.json` — a later revision adding four LinkedIn sibling
+  industries that leaked past the original exclusion list (Insurance Agencies and Brokerages,
+  Internet Marketplace Platforms, Business Consulting and Services, Medical and Diagnostic
+  Laboratories). Not used for any run in the baseline.
 
 The `:*` suffix in `titleSearch` is Postgres full-text prefix-match syntax, which is a strong
 hint about what the underlying API is doing with these strings.
