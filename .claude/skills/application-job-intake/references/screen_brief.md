@@ -39,7 +39,7 @@ can filter on it in Notion:
 | Tag | When | Example reason |
 |---|---|---|
 | `LANGUAGE:` | The role requires a language other than English: the title says "X speaking", "bilingual" or names a language market, or the JD makes fluency required | `LANGUAGE: Italian fluency required for the Italian market; strong AI SaaS fit otherwise.` |
-| `PUBLIC/DEFENCE:` | The role sells into public sector or defence: central or local government, defence, blue light, NHS and public health, public education, or the title or patch names one of these | `PUBLIC/DEFENCE: Territory is UK central government and blue light accounts.` |
+| `PUBLIC/DEFENCE/SECURITY:` | The role sells into public sector or defence (central or local government, defence, blue light, NHS and public health, public education, or a title or patch naming one of these), OR it is a security or cyber sale: the product is cybersecurity or security (endpoint, network, identity and IAM, SIEM and SOC, application, cloud or data security, managed security services), the company is a security vendor (industry "Computer and Network Security"), or the JD requires security or cyber selling experience or expertise | `PUBLIC/DEFENCE/SECURITY: Territory is UK central government and blue light accounts.` or `PUBLIC/DEFENCE/SECURITY: Cybersecurity platform sale; security market expertise required.` |
 
 - Score these rows 55 or lower and set the verdict to Skip.
 - Keep the rest of the reason short, and mention the underlying fit if it is otherwise strong, so a later re-read is easy.
@@ -47,6 +47,9 @@ can filter on it in Notion:
   but judge the row normally.
 - A company that sells to many sectors, public among them, does not trigger the rule. It applies only when the role's own
   patch, accounts or required track record is public sector or defence.
+- Security counts when it is the product or a required expertise. It does not count when it appears only as one option
+  among several ("IT, security or operations software"), as "a plus" or "highly preferred", or in the company's
+  marketing ("faster and more secure"). Data backup and resilience vendors count only when the JD requires security selling.
 
 Judgement rules learned from earlier runs:
 - The FLAGS line is a regex scan of the full JD; the JD text you see is cut at 2,400 characters. Treat a flagged
@@ -67,8 +70,8 @@ W56|72|Borderline|Elastic data/search platform and MEDDPICC fit well but technic
 W52|68|Borderline|ERP/EAM/FSM sale draws partially on SAP background but asset-heavy industries are not his vertical.
 W75|62|Borderline|Enterprise payments hunter fits fintech heritage but the Travel, Ticketing and Hospitality vertical is not on the CV.
 W62|40|Skip|LANGUAGE: German fluency is required and not on the CV.
-W67|48|Skip|PUBLIC/DEFENCE: 8+ years of public sector B2B sales is a hard requirement and absent from the CV.
-W78|58|Skip|Enterprise sales specifically in cybersecurity or data protection is required; neither is on the CV.
+W67|48|Skip|PUBLIC/DEFENCE/SECURITY: 8+ years of public sector B2B sales is a hard requirement and absent from the CV.
+W78|50|Skip|PUBLIC/DEFENCE/SECURITY: Enterprise sales specifically in cybersecurity or data protection is required; neither is on the CV.
 ```
 
 ## Output

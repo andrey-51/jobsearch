@@ -224,24 +224,30 @@ def load_verdicts(a):
     return v
 
 
-# Andrey's rule (2026-10-12): roles that require another language, or that sell into public sector or defence,
-# are always Skip, and the reason starts with a tag so they can be filtered in Notion.
-TAGS = ("LANGUAGE:", "PUBLIC/DEFENCE:")
+# Andrey's rule (2026-10-12): roles that require another language, or that sell into public sector, defence,
+# security or cyber, are always Skip, and the reason starts with a tag so they can be filtered in Notion.
+# "PUBLIC/DEFENCE:" was the tag before security was added; it is still recognised on old reasons.
+PDS = "PUBLIC/DEFENCE/SECURITY:"
+TAGS = ("LANGUAGE:", PDS, "PUBLIC/DEFENCE:")
 TITLE_LANG = re.compile(rf"\b({LANGS}|Italian|Bilingual|Multilingual)\b|speaking", re.I)
 TITLE_PUBLIC = re.compile(r"public sector|\bgovernment\b|central gov|local gov|\bdefen[cs]e\b|blue light|\bNHS\b|"
-                          r"\bMoD\b|ministry|\bfederal\b|law enforcement|\bpolice\b", re.I)
+                          r"\bMoD\b|ministry|\bfederal\b|law enforcement|\bpolice\b|\bsecurity\b|cyber|\bIAM\b|\bidentity\b|\bSOC\b", re.I)
+SECURITY_INDUSTRY = re.compile(r"computer and network security", re.I)
 
 
 def hard_skip(k, r, vd, sc, why):
-    """Apply the language and public/defence rule. The screener tags most rows; a title match is forced here
-    in case it missed one. JD-only signals stay with the screener, because boilerplate mentions are common."""
+    """Apply the language and public/defence/security rule. The screener tags most rows; a title or security-vendor
+    industry match is forced here in case it missed one. JD-only signals stay with the screener, because boilerplate
+    mentions are common."""
     tag = next((t for t in TAGS if why.startswith(t)), None)
     if not tag:
         title = r["Role"]
         if TITLE_LANG.search(title):
             tag, why = "LANGUAGE:", f"LANGUAGE: title names a language requirement ({title}). {why}"
         elif TITLE_PUBLIC.search(title):
-            tag, why = "PUBLIC/DEFENCE:", f"PUBLIC/DEFENCE: title names a public sector or defence patch ({title}). {why}"
+            tag, why = PDS, f"{PDS} title names a public sector, defence or security patch ({title}). {why}"
+        elif SECURITY_INDUSTRY.search(r.get("Org Industry") or ""):
+            tag, why = PDS, f"{PDS} company is a security vendor ({r['Org Industry']}). {why}"
         if tag:
             print(f"FORCED {k} {tag} {r['Company'][:24]} | {title[:50]} (screen said {vd} {sc})")
     if tag and (vd != "Skip" or sc > 55):
