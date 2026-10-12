@@ -224,6 +224,31 @@ def load_verdicts(a):
     return v
 
 
+# Andrey's rule (2026-10-12): roles that require another language, or that sell into public sector or defence,
+# are always Skip, and the reason starts with a tag so they can be filtered in Notion.
+TAGS = ("LANGUAGE:", "PUBLIC/DEFENCE:")
+TITLE_LANG = re.compile(rf"\b({LANGS}|Italian|Bilingual|Multilingual)\b|speaking", re.I)
+TITLE_PUBLIC = re.compile(r"public sector|\bgovernment\b|central gov|local gov|\bdefen[cs]e\b|blue light|\bNHS\b|"
+                          r"\bMoD\b|ministry|\bfederal\b|law enforcement|\bpolice\b", re.I)
+
+
+def hard_skip(k, r, vd, sc, why):
+    """Apply the language and public/defence rule. The screener tags most rows; a title match is forced here
+    in case it missed one. JD-only signals stay with the screener, because boilerplate mentions are common."""
+    tag = next((t for t in TAGS if why.startswith(t)), None)
+    if not tag:
+        title = r["Role"]
+        if TITLE_LANG.search(title):
+            tag, why = "LANGUAGE:", f"LANGUAGE: title names a language requirement ({title}). {why}"
+        elif TITLE_PUBLIC.search(title):
+            tag, why = "PUBLIC/DEFENCE:", f"PUBLIC/DEFENCE: title names a public sector or defence patch ({title}). {why}"
+        if tag:
+            print(f"FORCED {k} {tag} {r['Company'][:24]} | {title[:50]} (screen said {vd} {sc})")
+    if tag and (vd != "Skip" or sc > 55):
+        vd, sc = "Skip", min(sc, 55)
+    return vd, sc, why
+
+
 def cmd_final(a):
     rows = json.load(open(path(a, f"towrite_{a.run}.json")))
     mp = {m["sid"]: m["k"] for m in json.load(open(path(a, f"map_{a.run}.json")))}
@@ -232,9 +257,11 @@ def cmd_final(a):
     if missing:
         sys.exit(f"no verdict for {missing}")
     for r in rows:
-        vd, sc, why = v[mp[r["Source Job ID"]]]
+        k = mp[r["Source Job ID"]]
+        vd, sc, why = v[k]
+        vd, sc, why = hard_skip(k, r, vd, sc, why)
         if vd == "Pursue" and sc < 75 or vd == "Skip" and sc >= 60:
-            print(f"WARN score/verdict mismatch {mp[r['Source Job ID']]} {vd} {sc}")
+            print(f"WARN score/verdict mismatch {k} {vd} {sc}")
         r["Triage"], r["ATS Score"], r["Triage Reason"] = vd, sc, why[:2000]
     json.dump(rows, open(path(a, f"final_{a.run}.json"), "w"), ensure_ascii=False)
     print(f"final rows {len(rows)} {dict(collections.Counter(r['Triage'] for r in rows))}")

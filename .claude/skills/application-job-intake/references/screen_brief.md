@@ -31,6 +31,23 @@ A structural gap is something a recruiter rejects on regardless of other strengt
 
 An adjacent domain on its own is not structural; that is what Borderline is for.
 
+## Hard Skip rules (Andrey's instruction, 2026-10-12)
+
+Two kinds of role are always Skip, however good the rest of the fit, and the reason must start with a tag so Andrey
+can filter on it in Notion:
+
+| Tag | When | Example reason |
+|---|---|---|
+| `LANGUAGE:` | The role requires a language other than English: the title says "X speaking", "bilingual" or names a language market, or the JD makes fluency required | `LANGUAGE: Italian fluency required for the Italian market; strong AI SaaS fit otherwise.` |
+| `PUBLIC/DEFENCE:` | The role sells into public sector or defence: central or local government, defence, blue light, NHS and public health, public education, or the title or patch names one of these | `PUBLIC/DEFENCE: Territory is UK central government and blue light accounts.` |
+
+- Score these rows 55 or lower and set the verdict to Skip.
+- Keep the rest of the reason short, and mention the underlying fit if it is otherwise strong, so a later re-read is easy.
+- A language that is only "a plus", "an advantage" or "ideally" does not trigger the rule. Mention it in the reason,
+  but judge the row normally.
+- A company that sells to many sectors, public among them, does not trigger the rule. It applies only when the role's own
+  patch, accounts or required track record is public sector or defence.
+
 Judgement rules learned from earlier runs:
 - The FLAGS line is a regex scan of the full JD; the JD text you see is cut at 2,400 characters. Treat a flagged
   language or clearance as required only when the wording makes it required. "Preferred", "a plus", "an advantage"
@@ -48,8 +65,8 @@ W58|76|Pursue|Financial crime compliance SaaS sold to banks, fintechs and paymen
 W56|72|Borderline|Elastic data/search platform and MEDDPICC fit well but technical fluency in observability and security is a partial gap.
 W52|68|Borderline|ERP/EAM/FSM sale draws partially on SAP background but asset-heavy industries are not his vertical.
 W75|62|Borderline|Enterprise payments hunter fits fintech heritage but the Travel, Ticketing and Hospitality vertical is not on the CV.
-W62|40|Skip|German fluency is required and not on the CV.
-W67|48|Skip|8+ years of public sector B2B sales is a hard requirement and absent from the CV.
+W62|40|Skip|LANGUAGE: German fluency is required and not on the CV.
+W67|48|Skip|PUBLIC/DEFENCE: 8+ years of public sector B2B sales is a hard requirement and absent from the CV.
 W78|58|Skip|Enterprise sales specifically in cybersecurity or data protection is required; neither is on the CV.
 ```
 

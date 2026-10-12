@@ -36,6 +36,13 @@ These come from Andrey's standing instructions and from mistakes in earlier runs
   (same dedup key) comes back. The ledger is how deletions are detected (ledger rows that are no longer live).
 - **No duplicates.** Andrey's rule since 2026-10-04: skip any row whose posting or dedup key is already live, and in-batch
   duplicates. Report what was skipped; do not write it with a Duplicate flag.
+- **Languages and public/defence are always Skip** (Andrey, 2026-10-12). Any role that requires a language other than
+  English, or whose patch, accounts or required track record is public sector or defence (government, blue light, NHS,
+  public education, defence), gets Triage = Skip with a score of 55 or lower. Its Triage Reason starts with
+  `LANGUAGE:` or `PUBLIC/DEFENCE:` so it can be filtered in Notion. The screen brief tells screeners to apply it, and
+  `intake.py final` enforces it: tagged reasons are forced to Skip, and titles that name a language or a public or
+  defence patch are tagged and forced even if the screener missed them. A language that is only "a plus" does not count.
+  List these rows separately in the report.
 - **No Assessment section.** Pages carry Snapshot, Requirements and Full JD only (Assessments were removed on 2026-09-28).
 - **Check the schema before writing.** Fetch the data source and drop any property it no longer has. Machine Verdict and
   Rubric Version were removed on 2026-10-04; `intake.py show` and `nwrite.py` already leave them out. If a new property
@@ -108,7 +115,8 @@ Then merge:
 I final <run>
 ```
 
-This fails if any row lacks a verdict, and warns when a score falls outside its verdict's band.
+This fails if any row lacks a verdict, and warns when a score falls outside its verdict's band. It also applies the
+language and public/defence Skip rule and prints a `FORCED` line for every row it had to tag itself.
 
 ### 5. Write
 
@@ -152,7 +160,8 @@ Commit `data/ledger.csv`, so the next session can still tell which rows Andrey d
 | Weakest point first | Misfired hard fails among Pursue rows; screen reasons corrected; anything not verified |
 | Screen split | Pursue / Borderline / Skip counts |
 | Pursue table | Role, company, ATS score, machine Fit Score (mark 0s caused by misfires) |
-| Skip themes | Required languages, public sector, junior seats, agencies and so on |
+| Hard Skips | Rows tagged `LANGUAGE:` or `PUBLIC/DEFENCE:`, with the language or sector named |
+| Other Skip themes | Junior seats, missing specialisms, agencies and so on |
 | Housekeeping | Token state, schema changes, empty rows noticed |
 
 ## Other jobs this skill covers
