@@ -45,6 +45,8 @@ These come from Andrey's standing instructions and from mistakes in earlier runs
   enforces it: tagged reasons are forced to Skip, and the rule is forced on titles that name a language, a public or
   defence patch, or security, and on companies whose industry is "Computer and Network Security". A language that is only
   "a plus", or security listed as one option among several, does not count. List these rows separately in the report.
+  The rule applies to new batches only. Rows written before 2026-10-12 keep their untagged reasons, and Andrey chose
+  not to retag them, so do not apply it to older rows unless he asks.
 - **No Assessment section.** Pages carry Snapshot, Requirements and Full JD only (Assessments were removed on 2026-09-28).
 - **Check the schema before writing.** Fetch the data source and drop any property it no longer has. Machine Verdict and
   Rubric Version were removed on 2026-10-04; `intake.py show` and `nwrite.py` already leave them out. If a new property
