@@ -98,14 +98,18 @@ Ask whether to write and screen. Wait for the answer.
 I batches <run> --size 26
 ```
 
-Copy the CV text to `<work dir>/cv.txt`. The source is the CV Andrey attached or the project knowledge; ask if neither is
-available. Then spawn one subagent per batch in parallel (about 25 to 50 rows each). Give each the paths to
+Save the CV as plain text in `<work dir>/cv.txt`. The source is the CV Andrey attached or the project knowledge; ask if
+neither is available. Extract real text: from a .docx, read the paragraphs (python-docx, or strip every `<...>` tag from
+`word/document.xml` and collapse whitespace) and check that the file has no `<w:` tags left. On 2026-10-04 a CV file
+that still held Word XML made searches miss "KPMG" and "NRR of 110%+", and two accurate screen reasons were wrongly
+"corrected". Then spawn one subagent per batch in parallel (about 25 to 50 rows each). Give each the paths to
 `references/screen_brief.md`, `cv.txt`, its batch file, and its output file `screen/verdicts_<run>_<n>.txt`.
 Without subagents, screen the batches yourself in order.
 
 When the verdicts are back, check them before trusting them:
-- Read every Pursue reason and every reason that cites a figure or employer. Confirm each claim against `cv.txt` and fix
-  any that are invented. Earlier runs invented "KPMG co-sell" and "NRR 110 to 120 percent".
+- Read every Pursue reason and every reason that cites a figure or employer. Confirm each claim against the plain-text
+  `cv.txt`, and fix only claims you have confirmed are absent. Search for the key term on its own (for example `KPMG`,
+  `110`), not a long phrase, before concluding a claim is invented.
 - For every Skip whose reason is a language, and every Pursue with a language flag, read the language sentence in the
   full JD (`run_<run>.json`). "Advantage" or "not a requirement" means it is not a gap.
 

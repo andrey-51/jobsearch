@@ -53,8 +53,9 @@ Judgement rules learned from earlier runs:
   language or clearance as required only when the wording makes it required. "Preferred", "a plus", "an advantage"
   or "ideally" are not requirements. If the requirement wording is cut off, say so in the reason.
 - A company headquartered in the US, or legal boilerplate naming US states, is not a location gap when the role is UK-based.
-- Quote only facts that are in the CV file. Do not invent figures, employers or partners (earlier runs invented
-  "KPMG co-sell" and "NRR 110 to 120 percent"; both were wrong).
+- Quote only facts that are in the CV file, and quote figures exactly as the CV states them. Do not invent figures,
+  employers or partners. The CV is rich in specifics (NRR 110%+ at SAS and 120%+ at Finastra; SI co-sell with
+  Accenture, IBM and KPMG at Finastra; Accenture, McKinsey and Oliver Wyman at Microsoft), so cite them where they fit.
 
 ## Calibration examples (same method, earlier screens)
 
