@@ -14,7 +14,7 @@ Promoting rows into the Roles tracker is a different skill (application-role-int
 |---|---|
 | Role Intake data source (the only write target) | `collection://441379e4-d36a-4d53-b834-57242e0dafb3` |
 | Roles (read-only, never write) | `collection://29ca5e5b-5444-4136-ae62-7af42e552cbf` |
-| Apify actor | Fantastic Jobs `s3dtSTZSZWFtAVLn5`, pay per event (about $0.012 per job plus $0.01 start) |
+| Apify actor | Fantastic Jobs `s3dtSTZSZWFtAVLn5`, pay per event (about USD 0.012 per job plus USD 0.01 per run start) |
 | Helper | `scripts/intake.py` (fetch, prepare, live-sql, dedup, batches, final, show, verify, ledger-add) |
 | Scoring and page bodies | `scripts/pipeline.py` (rubric v1.1), `scripts/bodies.py` |
 | Direct REST writer | `scripts/nwrite.py` (needs a working `Notion_KEY`) |
