@@ -66,9 +66,10 @@ I prepare <run> --date <today YYYY-MM-DD>
 ```
 
 `fetch` prints status, cost, the date_created spread and the actor input. Note the timeRange and the number of
-excluded industries. `prepare` prints machine verdicts and hard fails. It lists every "Management track" and
-"Wrong location/US leak" hard fail with its evidence line. Read those: the rules misfire on phrases like "team of
-Account Executives", "headquartered in California" or US salary bands inside UK postings. A misfired row scores 0,
+excluded industries. `prepare` prints machine verdicts and hard fails. It lists every "Management track",
+"Wrong location/US leak" and "FTC/contract" hard fail with its evidence line. Read those: the rules misfire on phrases
+like "team of Account Executives", "headquartered in California", US salary bands inside UK postings or "Federal Trade
+Commission". A misfired row scores 0,
 but the ATS screen still judges it properly.
 
 ### 2. Dedupe against Notion
@@ -184,13 +185,15 @@ Commit `data/ledger.csv`, so the next session can still tell which rows Andrey d
 - **Refresh `data/roles.tsv`** when Roles has changed a lot: read Company, Role Title and the page url from Roles with a SQL
   query (read-only) and rewrite the file. It only drives the Cross-DB match note on pages.
 
-## Known issues (as of 2026-10-05)
+## Known issues (as of 2026-10-18)
 
 - `pipeline.py` hard-fail rules: "Management track" fires on body text such as "team of Account Executives" and "people
   management skills". "Wrong location/US leak" fires on US headquarters lines, US legal boilerplate and US salary bands in
   UK postings. In the last two runs this put four Pursue rows at Fit Score 0. A fix (title-only management check; ignore
   boilerplate and roles with a UK location) has been proposed and is not applied yet. Until then, rank by Triage, not
   Fit Score.
+- The "FTC/contract" rule also matches "FTC" as in the US Federal Trade Commission (scam-warning footers, seen on
+  Insurity on 2026-10-18). Check the evidence line `prepare` prints before trusting an FTC hard fail.
 - The machine scorer reads "insurance" in benefits text as an FSI signal.
 - Connector writes can normalise long dashed lines and non-breaking spaces in job text. This is cosmetic.
 - The screen's main blind spot: Andrey sometimes rates AI and data companies Strong even when they ask for a vertical he

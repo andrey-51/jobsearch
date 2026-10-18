@@ -78,7 +78,7 @@ def cmd_prepare(a):
     print("machine verdicts:", dict(collections.Counter(r["Machine Verdict"] for r in rows)))
     print("hard fails:", dict(collections.Counter(r["Hard Fail Reason"] for r in rows)))
     for r in rows:
-        if r["Hard Fail Reason"] in ("Management track", "Wrong location/US leak"):
+        if r["Hard Fail Reason"] in ("Management track", "Wrong location/US leak", "FTC/contract"):
             # these two rules misfire often; show the evidence so a human can judge
             ev = str(r.get("hard_fail_evidence", ""))[:150]
             print(f"  CHECK {r['Hard Fail Reason']}: {r['Company'][:24]} | {r['Role'][:40]} | {ev}")
