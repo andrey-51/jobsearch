@@ -103,8 +103,11 @@ Ask whether to write and screen. Wait for the answer.
 I batches <run> --size 26
 ```
 
-Save the CV as plain text in `<work dir>/cv.txt`. The source is the CV Andrey attached or the project knowledge; ask if
-neither is available. Extract real text: from a .docx, read the paragraphs (python-docx, or strip every `<...>` tag from
+Save the CV as plain text in `<work dir>/cv.txt`. The source is the CV Andrey attached or the project knowledge. If
+neither is there (container resets wipe earlier uploads), read `/Job/_lokot_andrey_CV.docx` from Dropbox with the Dropbox
+fetch tool. That is the base CV every screen since 2026-09-24 has used. /Job also holds tailored and newer variants
+(`Andrey_Lokot_CV_ext.docx`, `Andrey_Lokot_CV_.docx`, and per-company copies in /Job/Comps); use one of those only if
+Andrey says so. Leave out the contact line, which screeners do not need. Ask only if none of these can be read. Extract real text: from a .docx, read the paragraphs (python-docx, or strip every `<...>` tag from
 `word/document.xml` and collapse whitespace) and check that the file has no `<w:` tags left. On 2026-10-04 a CV file
 that still held Word XML made searches miss "KPMG" and "NRR of 110%+", and two accurate screen reasons were wrongly
 "corrected". Then spawn one subagent per batch in parallel (about 25 to 50 rows each). Give each the paths to
