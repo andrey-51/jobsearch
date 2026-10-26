@@ -13,7 +13,7 @@
 
 Secrets come from the environment (APIFY_TOKEN, Notion_KEY) and are never printed or written.
 """
-import argparse, collections, csv, json, os, re, shutil, subprocess, sys, urllib.request
+import argparse, collections, csv, hashlib, json, os, re, shutil, subprocess, sys, urllib.request
 
 SKILL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCRIPTS = os.path.join(SKILL, "scripts")
@@ -132,6 +132,14 @@ def cmd_live_sql(a):
         print("PARAMS " + json.dumps(chunk, ensure_ascii=False))
 
 
+def jd_hash(r):
+    """Fingerprint of the job description text, so the same posting under another title or job board
+    (seen 2026-10-26: Rithum vs "Rithum LinkedIn Board", Build Technologies AE vs Senior AE) counts as a duplicate."""
+    jd = r["body"].split("## Full JD", 1)[-1]
+    jd = re.sub(r"\s+", " ", jd).strip()
+    return hashlib.md5(jd.encode()).hexdigest() if len(jd) > 200 else None
+
+
 def cmd_dedup(a):
     live = read_live(a.live)
     _, _, _, ledger = relevant(a)
@@ -140,24 +148,29 @@ def cmd_dedup(a):
     deleted_keys = {r["dedup_key"] for r in deleted.values()} - live_keys
     rows = json.load(open(path(a, f"towrite_all_{a.run}.json")))
     cat = collections.defaultdict(list)
-    seen = set()
-    for r in rows:
-        s, k = r["Source Job ID"], r["Dedup Key"]
+    seen, seen_jd = set(), set()
+    # Highest machine score first, then the shorter company name ("Rithum" over "Rithum LinkedIn Board"),
+    # so when two copies collide the better one is kept.
+    for r in sorted(rows, key=lambda r: (-r["Fit Score"], len(r["Company"]))):
+        s, k, j = r["Source Job ID"], r["Dedup Key"], jd_hash(r)
         if s in live: c = "posting already live"
         elif s in deleted: c = "posting deleted by user"
         elif k in deleted_keys: c = "same role as a deleted row"
         elif k in live_keys: c = "same role as a live row"
         elif r.get("Duplicate") or k in seen: c = "in-batch duplicate"
+        elif j and j in seen_jd: c = "in-batch duplicate (same JD, other title or board)"
         else: c = "new"
         if c == "new":
             seen.add(k)
+            if j:
+                seen_jd.add(j)
         cat[c].append(r)
     new = sorted(cat["new"], key=lambda r: (-r["Fit Score"], r["Company"]))
     json.dump(new, open(path(a, f"towrite_{a.run}.json"), "w"), ensure_ascii=False)
     json.dump({c: [r["Source Job ID"] for r in v] for c, v in cat.items()}, open(path(a, f"dedup_{a.run}.json"), "w"))
     print(f"live rows that touch this batch {len(live)} | ledger rows that touch it {len(ledger)} | of those deleted by user {len(deleted)}")
     for c in ["new", "same role as a live row", "same role as a deleted row", "posting already live",
-              "posting deleted by user", "in-batch duplicate"]:
+              "posting deleted by user", "in-batch duplicate", "in-batch duplicate (same JD, other title or board)"]:
         v = cat.get(c, [])
         print(f"{c:28s} {len(v):4d} {dict(collections.Counter(r['Machine Verdict'] for r in v))}")
     for c in ["same role as a deleted row", "same role as a live row"]:

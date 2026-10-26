@@ -89,7 +89,9 @@ I dedup <run> --live <work dir>/live_<run>.txt
 ```
 
 The output groups rows as new, same role as a live row, same role as a deleted row, posting already live, posting
-deleted by user and in-batch duplicate. Only "new" rows go forward.
+deleted by user and in-batch duplicate. Only "new" rows go forward. In-batch duplicates include postings whose job
+description text is identical under another title or job board (for example Rithum and "Rithum LinkedIn Board"); the
+copy with the higher machine score, then the shorter company name, is kept.
 
 ### 3. Dry-run report, then stop
 
