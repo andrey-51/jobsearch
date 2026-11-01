@@ -101,6 +101,17 @@ Ask whether to write and screen. Wait for the answer.
 
 ### 4. ATS screen (after approval)
 
+**Rule Skips before screening (when Andrey asks, as on 2026-11-01: "move Skips to Intake Status Skipped and run the
+ATS screen for the rest").** Decide the language and public/defence/security Skips first and do not screen them.
+They are the titles the rule catches (`hard_skip` in intake.py: a language or "speaking" in the title, a public,
+defence, government, NHS or security patch, or the industry "Computer and Network Security"). Add titles that name a
+language market (DACH, Nordics, France and so on) only when the JD makes that language required. Coursera DACH said
+German was "a plus, but not essential" and was screened. Write them to `<work dir>/screen/verdicts_<run>_rules.txt`
+before running `batches`, one line each: `Kxxx|-|Skip|TAG reason; not screened.`. The key is `K` plus the row's
+zero-padded index in `towrite_<run>.json`. `batches` leaves these keys out. `final` writes them with an empty ATS
+Score and Intake Status = Skipped. JD-only judgement calls, such as a security vendor whose title does not say so,
+stay with the screen.
+
 ```
 I batches <run> --size 26
 ```
@@ -152,7 +163,8 @@ Query the result through the connector:
 SELECT (SELECT count(*) FROM "collection://441379e4-d36a-4d53-b834-57242e0dafb3") AS total,
        (SELECT count(*) FROM (SELECT "Source Job ID" FROM "collection://441379e4-d36a-4d53-b834-57242e0dafb3"
          WHERE "Source Job ID" IS NOT NULL GROUP BY "Source Job ID" HAVING count(*)>1)) AS dup_sids,
-       (SELECT group_concat("Source Job ID" || ':' || coalesce("Triage",'') || ':' || coalesce("ATS Score",''), '|')
+       (SELECT group_concat("Source Job ID" || ':' || coalesce("Triage",'') || ':' || coalesce("ATS Score",'') || ':' ||
+         coalesce("Intake Status",''), '|')
          FROM "collection://441379e4-d36a-4d53-b834-57242e0dafb3" WHERE "date:Fetched:start" = '<today>') AS new_rows
 ```
 

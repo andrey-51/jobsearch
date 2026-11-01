@@ -194,16 +194,27 @@ def flags(d):
     return "; ".join(dict.fromkeys(f))[:300]
 
 
+def rule_keys(a):
+    """Rows already decided as Skip by the language/public/security rule, listed before screening in
+    screen/verdicts_<run>_rules.txt as "Kxxx|-|Skip|TAG reason". They are left out of the screening batches."""
+    f = path(a, f"screen/verdicts_{a.run}_rules.txt")
+    return {l.split("|", 1)[0] for l in open(f) if l.strip()} if os.path.exists(f) else set()
+
+
 def cmd_batches(a):
     raw = {str(x["id"]): x for x in json.load(open(path(a, f"run_{a.run}.json")))}
     rows = json.load(open(path(a, f"towrite_{a.run}.json")))
     os.makedirs(path(a, "screen"), exist_ok=True)
-    mp, out = [], []
+    pre = rule_keys(a)
+    mp, out, ks = [], [], []
     for i, r in enumerate(rows):
         k = f"K{i:03d}"
         x = raw[r["Source Job ID"]]
         d = re.sub(r"\s+", " ", x.get("description_text") or "")
         mp.append({"k": k, "sid": r["Source Job ID"]})
+        if k in pre:
+            continue
+        ks.append(k)
         out.append(f"### {k} | {x.get('title')} | {x.get('organization')} | {x.get('org_linkedin_industry')} | "
                    f"hc {x.get('org_linkedin_headcount')} | {'; '.join(x.get('locations_derived') or [])} | "
                    f"{x.get('ai_work_arrangement')} | exp {x.get('ai_experience_level')}\n"
@@ -212,10 +223,12 @@ def cmd_batches(a):
                    f"FLAGS (regex scan of full JD): {flags(d) or 'none'}\n"
                    f"JD: {d[:2400]}\n\n")
     json.dump(mp, open(path(a, f"map_{a.run}.json"), "w"))
+    if pre:
+        print(f"left out {len(pre)} rule Skips: {sorted(pre)}")
     n = 0
     for b in range(0, len(out), a.size):
         open(path(a, f"screen/batch_{a.run}_{n}.txt"), "w").write("".join(out[b:b + a.size]))
-        print(f"screen/batch_{a.run}_{n}.txt  {mp[b]['k']}..{mp[min(b + a.size, len(mp)) - 1]['k']}")
+        print(f"screen/batch_{a.run}_{n}.txt  {len(out[b:b + a.size])} rows  {ks[b]}..{ks[min(b + a.size, len(ks)) - 1]}")
         n += 1
 
 
@@ -233,7 +246,7 @@ def load_verdicts(a):
                     sys.exit(f"bad verdict line in {f}: {line[:80]}")
                 if p[0] in v:
                     sys.exit(f"duplicate verdict key {p[0]}")
-                v[p[0]] = (p[2], int(p[1]), p[3])
+                v[p[0]] = (p[2], None if p[1] == "-" else int(p[1]), p[3])
     return v
 
 
@@ -263,8 +276,8 @@ def hard_skip(k, r, vd, sc, why):
             tag, why = PDS, f"{PDS} company is a security vendor ({r['Org Industry']}). {why}"
         if tag:
             print(f"FORCED {k} {tag} {r['Company'][:24]} | {title[:50]} (screen said {vd} {sc})")
-    if tag and (vd != "Skip" or sc > 55):
-        vd, sc = "Skip", min(sc, 55)
+    if tag and (vd != "Skip" or (sc or 0) > 55):
+        vd, sc = "Skip", None if sc is None else min(sc, 55)
     return vd, sc, why
 
 
@@ -278,13 +291,18 @@ def cmd_final(a):
     for r in rows:
         k = mp[r["Source Job ID"]]
         vd, sc, why = v[k]
+        if sc is None and vd != "Skip":
+            sys.exit(f"{k}: an unscreened row (score '-') must be a rule Skip")
         vd, sc, why = hard_skip(k, r, vd, sc, why)
-        if vd == "Pursue" and sc < 75 or vd == "Skip" and sc >= 60:
+        if sc is not None and (vd == "Pursue" and sc < 75 or vd == "Skip" and sc >= 60):
             print(f"WARN score/verdict mismatch {k} {vd} {sc}")
         r["Triage"], r["ATS Score"], r["Triage Reason"] = vd, sc, why[:2000]
+        if sc is None and r["Intake Status"] == "New":
+            r["Intake Status"] = "Skipped"  # rule Skip decided before screening (Andrey, 2026-11-01)
     json.dump(rows, open(path(a, f"final_{a.run}.json"), "w"), ensure_ascii=False)
-    print(f"final rows {len(rows)} {dict(collections.Counter(r['Triage'] for r in rows))}")
-    for r in sorted(rows, key=lambda r: -r["ATS Score"]):
+    print(f"final rows {len(rows)} {dict(collections.Counter(r['Triage'] for r in rows))} "
+          f"| Intake Status {dict(collections.Counter(r['Intake Status'] for r in rows))}")
+    for r in sorted(rows, key=lambda r: -(r["ATS Score"] or 0)):
         if r["Triage"] == "Pursue":
             print(f"   ATS {r['ATS Score']} | fit {r['Fit Score']:>3} | {r['Company'][:26]:26s} | {r['Role'][:55]}")
 
@@ -314,14 +332,17 @@ def cmd_show(a):
 
 # ---------------------------------------------------------------- verify + ledger
 def cmd_verify(a):
-    """--got holds the SQL group_concat of "sid:Triage:ATS Score" joined by '|'."""
+    """--got holds the SQL group_concat of "sid:Triage:ATS Score:Intake Status" joined by '|'
+    (the older three-field form without Intake Status is still accepted)."""
     got = {}
     for x in open(a.got).read().strip().split("|"):
         p = x.split(":")
         if len(p) >= 3:
-            got[p[0]] = (p[1], p[2].split(".")[0])
+            got[p[0]] = (p[1], p[2].split(".")[0]) + ((p[3],) if len(p) >= 4 else ())
     rows = json.load(open(path(a, f"final_{a.run}.json")))
-    want = {r["Source Job ID"]: (r["Triage"], str(r["ATS Score"])) for r in rows}
+    want = {r["Source Job ID"]: (r["Triage"], "" if r["ATS Score"] is None else str(r["ATS Score"]), r["Intake Status"])
+            for r in rows}
+    want = {s: w[:len(got[s])] if s in got else w for s, w in want.items()}
     missing = sorted(set(want) - set(got))
     extra = sorted(set(got) - set(want))
     bad = sorted(s for s in want if s in got and got[s] != want[s])
