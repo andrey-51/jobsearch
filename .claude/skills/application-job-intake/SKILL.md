@@ -205,13 +205,19 @@ Commit `data/ledger.csv`, so the next session can still tell which rows Andrey d
 - **Refresh `data/roles.tsv`** when Roles has changed a lot: read Company, Role Title and the page url from Roles with a SQL
   query (read-only) and rewrite the file. It only drives the Cross-DB match note on pages.
 
-## Known issues (as of 2026-10-18)
+## Known issues (as of 2026-11-01)
 
 - `pipeline.py` hard-fail rules: "Management track" fires on body text such as "team of Account Executives" and "people
   management skills". "Wrong location/US leak" fires on US headquarters lines, US legal boilerplate and US salary bands in
   UK postings. In the last two runs this put four Pursue rows at Fit Score 0. A fix (title-only management check; ignore
   boilerplate and roles with a UK location) has been proposed and is not applied yet. Until then, rank by Triage, not
   Fit Score.
+- Founding and leadership searches (run HwHKbpkY8NNiJSaWW on 2026-11-01: founding, first-hire, GTM Lead, Sales Lead and
+  Head of Sales titles, posted from 8 August) score almost entirely as Noise: "Management track" fails every Head of
+  Sales title. The screen brief judges player-coach and first-hire seats on fit (Andrey, 2026-11-01), so the Triage is
+  the only usable ranking for these runs.
+- Two runs written on the same day share a Fetched date, so the verify query returns both. `verify` ignores rows the
+  ledger already holds for another run.
 - The "FTC/contract" rule also matches "FTC" as in the US Federal Trade Commission (scam-warning footers, seen on
   Insurity on 2026-10-18). Check the evidence line `prepare` prints before trusting an FTC hard fail.
 - The machine scorer reads "insurance" in benefits text as an FSI signal.

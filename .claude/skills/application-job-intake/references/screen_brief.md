@@ -26,10 +26,18 @@ A structural gap is something a recruiter rejects on regardless of other strengt
 - a required specialism that is absent (cybersecurity, IAM, MarTech, CPQ and so on)
 - a required regional track record that is absent, or security clearance required
 - a role that is clearly junior (SDR, BDR, SMB, mid-market, commercial) or not a quota-carrying sales role
-- a fixed-term contract, a recruitment-agency posting, or a people-manager role leading a team of sellers
+- a fixed-term contract, a recruitment-agency posting, or a pure people-manager role (running a team of sellers
+  without carrying deals of his own)
 - a location outside the UK or remote-UK
 
 An adjacent domain on its own is not structural; that is what Borderline is for.
+
+Player-coach roles are judged on fit (Andrey, 2026-11-01). A Head of Sales, Sales Lead or GTM Lead who carries his own
+deals or quota while leading a small team, or who is the first or an early sales hire with little or no team yet, is
+not a structural gap: score the selling, domain and seniority fit as for any other role, and say in the reason that it
+is a player-coach or first-hire seat. It stays a gap only when the JD makes it a pure management job (headcount to
+manage, no personal deals). Sales operations, RevOps, enablement, pre-sales, GTM engineering and growth marketing roles
+are still "not a quota-carrying sales role".
 
 ## Hard Skip rules (Andrey's instruction, 2026-10-12)
 

@@ -356,7 +356,9 @@ def cmd_verify(a):
             for r in rows}
     want = {s: w[:len(got[s])] if s in got else w for s, w in want.items()}
     missing = sorted(set(want) - set(got))
-    extra = sorted(set(got) - set(want))
+    # Rows another run wrote on the same Fetched date are in the ledger already; only unknown rows are unexpected.
+    others = {s for s, r in read_ledger().items() if r["run"] != a.run}
+    extra = sorted(set(got) - set(want) - others)
     bad = sorted(s for s in want if s in got and got[s] != want[s])
     print(f"intended {len(want)} | found {len(got)} | missing {missing or 'none'} | unexpected {extra or 'none'} | mismatched {bad or 'none'}")
     sys.exit(1 if missing or bad else 0)
