@@ -85,6 +85,10 @@ def cmd_prepare(a):
 
 
 # ---------------------------------------------------------------- dedup
+# jd_hash was added on 2026-11-01; older rows leave it empty (DictReader gives None).
+LEDGER_COLS = ["sid", "dedup_key", "company", "role", "run", "written", "jd_hash"]
+
+
 def read_ledger():
     if not os.path.exists(LEDGER):
         return {}
@@ -110,8 +114,9 @@ def relevant(a):
     rows = json.load(open(path(a, f"towrite_all_{a.run}.json")))
     sids = {r["Source Job ID"] for r in rows}
     keys = {r["Dedup Key"] for r in rows}
+    jds = {jd_hash(r) for r in rows} - {None}
     ledger = read_ledger()
-    rel = {s: r for s, r in ledger.items() if s in sids or r["dedup_key"] in keys}
+    rel = {s: r for s, r in ledger.items() if s in sids or r["dedup_key"] in keys or r.get("jd_hash") in jds}
     return rows, sids | set(rel), keys, rel
 
 
@@ -146,6 +151,10 @@ def cmd_dedup(a):
     deleted = {s: r for s, r in ledger.items() if s not in live}
     live_keys = set(live.values()) - {""}
     deleted_keys = {r["dedup_key"] for r in deleted.values()} - live_keys
+    # Same job description as a row written in an earlier run, under another title or board (2026-11-01: Build
+    # Technologies "Account Executive" came back a week after its "Senior Account Executive" twin was written).
+    live_jd = {r.get("jd_hash") for s, r in ledger.items() if s in live} - {None, ""}
+    deleted_jd = {r.get("jd_hash") for r in deleted.values()} - live_jd - {None, ""}
     rows = json.load(open(path(a, f"towrite_all_{a.run}.json")))
     cat = collections.defaultdict(list)
     seen, seen_jd = set(), set()
@@ -157,6 +166,8 @@ def cmd_dedup(a):
         elif s in deleted: c = "posting deleted by user"
         elif k in deleted_keys: c = "same role as a deleted row"
         elif k in live_keys: c = "same role as a live row"
+        elif j and j in deleted_jd: c = "same JD as a deleted row"
+        elif j and j in live_jd: c = "same JD as a live row"
         elif r.get("Duplicate") or k in seen: c = "in-batch duplicate"
         elif j and j in seen_jd: c = "in-batch duplicate (same JD, other title or board)"
         else: c = "new"
@@ -169,11 +180,12 @@ def cmd_dedup(a):
     json.dump(new, open(path(a, f"towrite_{a.run}.json"), "w"), ensure_ascii=False)
     json.dump({c: [r["Source Job ID"] for r in v] for c, v in cat.items()}, open(path(a, f"dedup_{a.run}.json"), "w"))
     print(f"live rows that touch this batch {len(live)} | ledger rows that touch it {len(ledger)} | of those deleted by user {len(deleted)}")
-    for c in ["new", "same role as a live row", "same role as a deleted row", "posting already live",
-              "posting deleted by user", "in-batch duplicate", "in-batch duplicate (same JD, other title or board)"]:
+    for c in ["new", "same role as a live row", "same role as a deleted row", "same JD as a live row",
+              "same JD as a deleted row", "posting already live", "posting deleted by user", "in-batch duplicate",
+              "in-batch duplicate (same JD, other title or board)"]:
         v = cat.get(c, [])
         print(f"{c:28s} {len(v):4d} {dict(collections.Counter(r['Machine Verdict'] for r in v))}")
-    for c in ["same role as a deleted row", "same role as a live row"]:
+    for c in ["same role as a deleted row", "same role as a live row", "same JD as a deleted row", "same JD as a live row"]:
         for r in cat.get(c, []):
             print(f"   {c[:24]:24s} | {r['Fit Score']:>3} | {r['Company'][:26]:26s} | {r['Role'][:55]}")
     print("new, machine Strong:")
@@ -358,9 +370,9 @@ def cmd_ledger_add(a):
     with open(LEDGER, "a", newline="") as f:
         w = csv.writer(f)
         if not exists:
-            w.writerow(["sid", "dedup_key", "company", "role", "run", "written"])
+            w.writerow(LEDGER_COLS)
         for r in new:
-            w.writerow([r["Source Job ID"], r["Dedup Key"], r["Company"], r["Role"], a.run, r["Fetched"]])
+            w.writerow([r["Source Job ID"], r["Dedup Key"], r["Company"], r["Role"], a.run, r["Fetched"], jd_hash(r) or ""])
     print(f"ledger +{len(new)} rows -> {len(ledger) + len(new)}")
 
 

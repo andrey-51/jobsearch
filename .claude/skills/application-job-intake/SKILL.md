@@ -88,10 +88,13 @@ they contain quotes, dashes and pipes that break the call. Paste each returned `
 I dedup <run> --live <work dir>/live_<run>.txt
 ```
 
-The output groups rows as new, same role as a live row, same role as a deleted row, posting already live, posting
-deleted by user and in-batch duplicate. Only "new" rows go forward. In-batch duplicates include postings whose job
-description text is identical under another title or job board (for example Rithum and "Rithum LinkedIn Board"); the
-copy with the higher machine score, then the shorter company name, is kept.
+The output groups rows as new, same role as a live row, same role as a deleted row, same JD as a live row, same JD as
+a deleted row, posting already live, posting deleted by user and in-batch duplicate. Only "new" rows go forward.
+In-batch duplicates include postings whose job description text is identical under another title or job board (for
+example Rithum and "Rithum LinkedIn Board"); the copy with the higher machine score, then the shorter company name, is
+kept. "Same JD" compares against the `jd_hash` column of the ledger, so a posting that returns under another title in a
+later run is caught (Build Technologies "Account Executive" on 2026-11-01, a week after its "Senior Account Executive"
+twin was written). The column was added on 2026-11-01, so rows written before 2026-10-18 have no fingerprint.
 
 ### 3. Dry-run report, then stop
 
