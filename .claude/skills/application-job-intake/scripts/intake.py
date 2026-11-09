@@ -309,8 +309,9 @@ def cmd_final(a):
         if sc is not None and (vd == "Pursue" and sc < 75 or vd == "Skip" and sc >= 60):
             print(f"WARN score/verdict mismatch {k} {vd} {sc}")
         r["Triage"], r["ATS Score"], r["Triage Reason"] = vd, sc, why[:2000]
-        if sc is None and r["Intake Status"] == "New":
-            r["Intake Status"] = "Skipped"  # rule Skip decided before screening (Andrey, 2026-11-01)
+        if r["Intake Status"] == "New" and (sc is None or vd == "Skip" and a.skip_status):
+            # rule Skips decided before screening always; screened Skips with --skip-status (Andrey, 2026-11-09)
+            r["Intake Status"] = "Skipped"
     json.dump(rows, open(path(a, f"final_{a.run}.json"), "w"), ensure_ascii=False)
     print(f"final rows {len(rows)} {dict(collections.Counter(r['Triage'] for r in rows))} "
           f"| Intake Status {dict(collections.Counter(r['Intake Status'] for r in rows))}")
@@ -382,8 +383,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dir", default=os.environ.get("INTAKE_DIR", "./intake_work"))
     sp = ap.add_subparsers(dest="cmd", required=True)
-    for name in ["fetch", "final", "ledger-add", "live-sql"]:
+    for name in ["fetch", "ledger-add", "live-sql"]:
         sp.add_parser(name).add_argument("run")
+    p = sp.add_parser("final"); p.add_argument("run")
+    p.add_argument("--skip-status", action="store_true", help="also set Intake Status = Skipped on screened Skips")
     p = sp.add_parser("prepare"); p.add_argument("run"); p.add_argument("--date", required=True)
     p = sp.add_parser("dedup"); p.add_argument("run"); p.add_argument("--live", required=True)
     p = sp.add_parser("batches"); p.add_argument("run"); p.add_argument("--size", type=int, default=26)

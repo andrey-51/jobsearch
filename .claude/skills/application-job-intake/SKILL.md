@@ -146,11 +146,15 @@ I final <run>
 This fails if any row lacks a verdict, and warns when a score falls outside its verdict's band. It also applies the
 language and public/defence Skip rule and prints a `FORCED` line for every row it had to tag itself.
 
+When Andrey asks for Skips to go to Skipped (he did on 2026-11-01 and 2026-11-09), run `I final <run> --skip-status`:
+every screened Skip is then written with Intake Status = Skipped, so no update calls are needed afterwards. Rows he
+asks to keep visible (the SAS roles on 2026-11-01) are set back to New in `final_<run>.json` before writing.
+
 ### 5. Write
 
 Test the token first: GET `https://api.notion.com/v1/data_sources/441379e4-d36a-4d53-b834-57242e0dafb3` with `Notion_KEY`.
 
-- **Token works (fast path).** Write the rows with
+- **Token works (fast path; working again on 2026-11-09).** Write the rows with
   `cd <work dir> && python3 <skill>/scripts/nwrite.py final_<run>.json wrote_<run>.txt 0 <n>`.
   For large batches, run four ranges in parallel. The log makes it resumable. If a write fails after the page was
   created (partial_page in the output), archive that page rather than retrying blindly.
