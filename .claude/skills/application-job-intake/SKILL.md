@@ -51,7 +51,9 @@ These come from Andrey's standing instructions and from mistakes in earlier runs
 - **Check the schema before writing.** Fetch the data source and drop any property it no longer has. Machine Verdict and
   Rubric Version were removed on 2026-10-04; `intake.py show` and `nwrite.py` already leave them out. If a new property
   appears, leave it empty.
-- **Keep Andrey's fields alone.** Human Verdict and Noise Reason are his. Never set or change them.
+- **Keep Andrey's fields alone.** Human Verdict and Noise Reason are his. Never set or change them. Both (and a Button
+  property added on 2026-11-01) were gone from the schema on 2026-11-09; neither writer sets them, so nothing breaks, but
+  the blind accuracy check under "Re-screen rows with empty Triage" needs Human Verdict and cannot run without it.
 
 ## Procedure
 
