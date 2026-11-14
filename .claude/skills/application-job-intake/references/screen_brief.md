@@ -8,8 +8,12 @@ Candidate in one line (the CV file wins on any detail): London-based senior ente
 SAP (FSI), Misys/Finastra (Global Account Manager, banking software), Microsoft (FSI Sales Lead CEE, about $100M),
 Foresight (fintech, data analytics), SAS (Enterprise / Growth Sector Manager, $17M ARR, FSI, data management,
 analytics, AI), DataWave (2024 to present, founding commercial lead, AI and data). INSEAD EMBA, Oxford.
-No foreign languages on the CV. No public sector, education, healthcare, cybersecurity or IAM, MarTech, CPQ,
+No foreign languages on the CV. No public sector, education, healthcare, cybersecurity or IAM, CPQ,
 Middle East or Nordics track record on the CV.
+
+MarTech counts as covered (Andrey, 2026-11-14): DataWave is a customer data platform, so a MarTech, CDP, ABM or
+marketing-platform requirement is met by DataWave and is not a structural gap. Its depth is one founding role since
+2024, so a JD that asks for many years of selling to marketing leaders is still a partial fit; say so in the reason.
 
 ## Scoring
 
@@ -23,7 +27,7 @@ location and hard requirements.
 A structural gap is something a recruiter rejects on regardless of other strengths:
 - a required language that is not on the CV
 - a required vertical or sector track record that is absent (public sector, education, healthcare, defence and so on)
-- a required specialism that is absent (cybersecurity, IAM, MarTech, CPQ and so on)
+- a required specialism that is absent (cybersecurity, IAM, CPQ and so on)
 - a required regional track record that is absent, or security clearance required
 - a role that is clearly junior (SDR, BDR, SMB, mid-market, commercial) or not a quota-carrying sales role
 - a fixed-term contract, a recruitment-agency posting, or a pure people-manager role (running a team of sellers
