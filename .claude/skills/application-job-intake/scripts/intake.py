@@ -182,6 +182,19 @@ def jd_hash(r):
     return hashlib.md5(jd.encode()).hexdigest() if len(jd) > 200 else None
 
 
+# Loose role key: company without legal suffixes and title as a set of words, so the same role under another company
+# spelling or word order matches (2026-11-22: LinkedIn "Aircall" vs job board "Aircall.io, Inc.", "Enterprise Account
+# Executive" vs "Account Executive, Enterprise").
+CO_STOP = r"\b(io|inc|ltd|limited|llc|plc|group|gmbh|corp|corporation|co|technologies|software|ai|uk|the)\b"
+
+
+def loose_key(k):
+    co, _, ti = k.partition("|")
+    core = re.sub(r"[^a-z0-9]", "", re.sub(CO_STOP, "", co))
+    words = frozenset(w for w in re.findall(r"[a-z0-9&]+", re.sub(r"copy of|\(copy\)", "", ti)) if w not in ("and", "the", "of"))
+    return (core, words) if core and words else None
+
+
 def cmd_dedup(a):
     live = read_live(a.live)
     _, _, _, ledger = relevant(a)
@@ -192,37 +205,43 @@ def cmd_dedup(a):
     # Technologies "Account Executive" came back a week after its "Senior Account Executive" twin was written).
     live_jd = {r.get("jd_hash") for s, r in ledger.items() if s in live} - {None, ""}
     deleted_jd = {r.get("jd_hash") for r in deleted.values()} - live_jd - {None, ""}
+    live_loose = {loose_key(k) for k in live_keys} - {None}
     rows = json.load(open(path(a, f"towrite_all_{a.run}.json")))
     cat = collections.defaultdict(list)
-    seen, seen_jd = set(), set()
+    seen, seen_jd, seen_loose = set(), set(), set()
     # Highest machine score first, then the shorter company name ("Rithum" over "Rithum LinkedIn Board"),
     # so when two copies collide the better one is kept.
     for r in sorted(rows, key=lambda r: (-r["Fit Score"], len(r["Company"]))):
-        s, k, j = r["Source Job ID"], r["Dedup Key"], jd_hash(r)
+        s, k, j, lk = r["Source Job ID"], r["Dedup Key"], jd_hash(r), loose_key(r["Dedup Key"])
         if s in live: c = "posting already live"
         elif s in deleted: c = "posting deleted by user"
         elif k in deleted_keys: c = "same role as a deleted row"
         elif k in live_keys: c = "same role as a live row"
         elif j and j in deleted_jd: c = "same JD as a deleted row"
         elif j and j in live_jd: c = "same JD as a live row"
+        elif lk and lk in live_loose: c = "same role as a live row (other spelling)"
         elif r.get("Duplicate") or k in seen: c = "in-batch duplicate"
         elif j and j in seen_jd: c = "in-batch duplicate (same JD, other title or board)"
+        elif lk and lk in seen_loose: c = "in-batch duplicate (other spelling)"
         else: c = "new"
         if c == "new":
             seen.add(k)
             if j:
                 seen_jd.add(j)
+            if lk:
+                seen_loose.add(lk)
         cat[c].append(r)
     new = sorted(cat["new"], key=lambda r: (-r["Fit Score"], r["Company"]))
     json.dump(new, open(path(a, f"towrite_{a.run}.json"), "w"), ensure_ascii=False)
     json.dump({c: [r["Source Job ID"] for r in v] for c, v in cat.items()}, open(path(a, f"dedup_{a.run}.json"), "w"))
     print(f"live rows that touch this batch {len(live)} | ledger rows that touch it {len(ledger)} | of those deleted by user {len(deleted)}")
-    for c in ["new", "same role as a live row", "same role as a deleted row", "same JD as a live row",
-              "same JD as a deleted row", "posting already live", "posting deleted by user", "in-batch duplicate",
-              "in-batch duplicate (same JD, other title or board)"]:
+    for c in ["new", "same role as a live row", "same role as a live row (other spelling)", "same role as a deleted row",
+              "same JD as a live row", "same JD as a deleted row", "posting already live", "posting deleted by user",
+              "in-batch duplicate", "in-batch duplicate (same JD, other title or board)", "in-batch duplicate (other spelling)"]:
         v = cat.get(c, [])
         print(f"{c:28s} {len(v):4d} {dict(collections.Counter(r['Machine Verdict'] for r in v))}")
-    for c in ["same role as a deleted row", "same role as a live row", "same JD as a deleted row", "same JD as a live row"]:
+    for c in ["same role as a deleted row", "same role as a live row", "same role as a live row (other spelling)",
+              "same JD as a deleted row", "same JD as a live row"]:
         for r in cat.get(c, []):
             print(f"   {c[:24]:24s} | {r['Fit Score']:>3} | {r['Company'][:26]:26s} | {r['Role'][:55]}")
     print("new, machine Strong:")
