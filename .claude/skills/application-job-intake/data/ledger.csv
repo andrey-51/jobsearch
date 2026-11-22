@@ -1259,3 +1259,60 @@ sid,dedup_key,company,role,run,written,jd_hash
 2467402793,the access|head of sales,The Access Group,Head of Sales,lWqUfNjxexM7UsnQF,2026-11-14,0a41a5b1c798a39d17e5a5dd1c0f975b
 2457587955,wesco|manager - strategic accounts,Wesco,Manager - Strategic Accounts,lWqUfNjxexM7UsnQF,2026-11-14,60af19ca7f7e643f444894f16484aac7
 2466188216,zone and|account executive,Zone & Co,Account Executive,lWqUfNjxexM7UsnQF,2026-11-14,a788db18a4b741bb90c4be1e356e11ee
+2478112096,servicenow|cyber account executive – cyber security & risk,ServiceNow,Cyber Account Executive – Cyber Security & Risk,hPnPC3zePQmrLfu1C,2026-11-22,933693b664713d528d3b9763d521296d
+2478108254,servicenow|cyber security & risk account executive,ServiceNow,Cyber Security & Risk Account Executive,hPnPC3zePQmrLfu1C,2026-11-22,9a4b36180a144c0a2bbb5e7766468dbe
+2473750868,"anthropic|account executive, quantitative trading & investing",Anthropic,"Account Executive, Quantitative Trading & Investing",hPnPC3zePQmrLfu1C,2026-11-22,4e4bd395bcf7f748f09275e6b7d446dc
+2473489061,"glean|enterprise account executive, uki",Glean,"Enterprise Account Executive, UKI",hPnPC3zePQmrLfu1C,2026-11-22,fa795749726f9c5a4d1f82d0491ee50a
+2473843335,chainalysis|client account executive - financial services,Chainalysis,Client Account Executive - Financial Services,hPnPC3zePQmrLfu1C,2026-11-22,dfb2d8f81684d5854375feaf9485cb10
+2475996114,elevenlabs|strategic account executive - uk/i - insurance,ElevenLabs,Strategic Account Executive - UK/I - Insurance,hPnPC3zePQmrLfu1C,2026-11-22,0a86bf163801119a8db62613c5af662a
+2471261860,"writer|strategic account executive, healthcare & life sciences (uk)",WRITER,"Strategic account executive, healthcare & life sciences (UK)",hPnPC3zePQmrLfu1C,2026-11-22,17172dd4dd11dda62fd149980007210e
+2472735318,slate technologies|enterprise account executive – london / uk,Slate Technologies,Enterprise Account Executive – London / UK,hPnPC3zePQmrLfu1C,2026-11-22,06e77827e7a80811152772324fe81fa1
+2472075326,"airtable|senior account executive, strategic accounts uk&i + northern europe",Airtable,"Senior Account Executive, Strategic Accounts  UK&I + Northern Europe",hPnPC3zePQmrLfu1C,2026-11-22,6bde3c2e302554cf727b99d3d174bb0e
+2469633522,ifs|enterprise sales account executive - net new (manufacturing),IFS,Enterprise Sales Account Executive - Net New (Manufacturing),hPnPC3zePQmrLfu1C,2026-11-22,7b4bb9c97f98a4caac3413e994eef9e0
+2470230883,quantum metric|senior / strategic account executive,Quantum Metric,Senior / Strategic Account Executive,hPnPC3zePQmrLfu1C,2026-11-22,f680fe964560a2f033b192594393d592
+2469610705,boomi|enterprise account executive – future opportunities – emea region,Boomi,Enterprise Account Executive – Future Opportunities – EMEA Region,hPnPC3zePQmrLfu1C,2026-11-22,6c32aaee330427fdde2ff411ef9e4066
+2470226998,"logicmonitor|account executive, strategic enteprise (pub sec)",LogicMonitor,"Account Executive, Strategic Enteprise (Pub Sec)",hPnPC3zePQmrLfu1C,2026-11-22,526372d37abcc68856591d1f87b1f9ba
+2469574983,n8n|enterprise account executive uk&i (remote uk&i),n8n,Enterprise Account Executive UK&I (Remote UK&I),hPnPC3zePQmrLfu1C,2026-11-22,5192b3c63d315d2c1dc8d5d5348d19cf
+2472367211,"altana|strategic account director, logistics",Altana,"Strategic Account Director, Logistics",hPnPC3zePQmrLfu1C,2026-11-22,65b9822bfcbc1bbd172a80368b189d76
+2476563595,"perplexity|founding account executive, emea",Perplexity,"Founding Account Executive, EMEA",hPnPC3zePQmrLfu1C,2026-11-22,d9681563dcb5269b4a5d68dd424bbc17
+2470000227,cisco|account executive / public sector - splunk,Cisco,Account Executive  / Public Sector - Splunk,hPnPC3zePQmrLfu1C,2026-11-22,698f9071fb967fba3617b0cf41af1542
+2475813990,databricks|startup account executive,Databricks,Startup Account Executive,hPnPC3zePQmrLfu1C,2026-11-22,90bcc862d4a4e74c5f67651d6e6ad7fd
+2471354179,sapiens|strategic account director,Sapiens,Strategic Account Director,hPnPC3zePQmrLfu1C,2026-11-22,0058670d8a32143a6254a42f677dc43c
+2478323233,stripe|account executive product - issuing & treasury,Stripe,Account Executive Product - Issuing & Treasury,hPnPC3zePQmrLfu1C,2026-11-22,961e39c5f7a805b25071397dd8aa125d
+2472484144,factory|enterprise account executive - emea,Factory,Enterprise Account Executive - EMEA,hPnPC3zePQmrLfu1C,2026-11-22,d92b6743e86441b30eb5fe4644ade782
+2474013882,h company|founding sales lead - uk,H Company,Founding Sales Lead - UK,hPnPC3zePQmrLfu1C,2026-11-22,20fbb97f8d95bdd62da6d2fa41b6006a
+2475903461,"verkada|enterprise account executive, public sector south - uk",Verkada,"Enterprise Account Executive, Public Sector South - UK",hPnPC3zePQmrLfu1C,2026-11-22,1b13eea47e597ee26e274b17319ce3b4
+2475903150,"verkada|enterprise account executive, public sector north - uk",Verkada,"Enterprise Account Executive, Public Sector North - UK",hPnPC3zePQmrLfu1C,2026-11-22,cbc7b8e709bebc880d782c8a6381304c
+2469528453,datadog|major account manager (uk),Datadog,Major Account Manager (UK),hPnPC3zePQmrLfu1C,2026-11-22,ee6359d92f73a8ac82b4feba8da1dddf
+2476393202,brightedge|strategic account manager - emea,BrightEdge,Strategic Account Manager - EMEA,hPnPC3zePQmrLfu1C,2026-11-22,4b972cc5b4af2295b7df97b668514bd4
+2471961127,inspectorio|senior enterprise account executive emea,Inspectorio,Senior Enterprise Account Executive EMEA,hPnPC3zePQmrLfu1C,2026-11-22,71a39245f07656fa722d57428fe4955e
+2469839002,polyai|enterprise account executive - u.k. (evergreen role),PolyAI,Enterprise Account Executive - U.K. (Evergreen Role),hPnPC3zePQmrLfu1C,2026-11-22,1b132bc2c959f550d7c366d1592b4c88
+2476432746,juro|account executive,Juro,Account Executive,hPnPC3zePQmrLfu1C,2026-11-22,0c8913da4b18a8fd39a9074eb79376db
+2469731990,sap careers|services account executive - ai expertise,SAP Careers,Services Account Executive - AI Expertise,hPnPC3zePQmrLfu1C,2026-11-22,30c8bed6e45204d329bfed887c66da37
+2473934842,red hat|strategic accounts manager 4,Red Hat,Strategic Accounts Manager 4,hPnPC3zePQmrLfu1C,2026-11-22,467b5b25cb0a172ebf858a0e37841bc2
+2469964949,cambridge spark|enterprise account executive,Cambridge Spark,Enterprise Account Executive,hPnPC3zePQmrLfu1C,2026-11-22,4e84730316bba97a9f12f7a645685fbb
+2471172326,customs4trade|account executive,Customs4trade,Account Executive,hPnPC3zePQmrLfu1C,2026-11-22,5614d97da59e77234b338d75fa86b471
+2469965985,emplifi|account executive - nordics,Emplifi,Account Executive - Nordics,hPnPC3zePQmrLfu1C,2026-11-22,6a785ae3c2405cd92214d851c6e2a5b5
+2469966423,emplifi|account executive - southern europe,Emplifi,Account Executive - Southern Europe,hPnPC3zePQmrLfu1C,2026-11-22,52d3a5aad3000b03453220c38bc1f6bc
+2469869688,"amity solutions|gtm lead, uk/emea",Amity Solutions,"GTM Lead, UK/EMEA",hPnPC3zePQmrLfu1C,2026-11-22,4cf903ebda6ca77cb9b30e787d7900f8
+2471159166,"openai|account director, startups | new business - uk&i",OpenAI,"Account Director, Startups | New Business - UK&I",hPnPC3zePQmrLfu1C,2026-11-22,1cbedcffbbd993a6ca445f711f5a3643
+2469776438,dept|senior account director,DEPT®,Senior Account Director,hPnPC3zePQmrLfu1C,2026-11-22,7bfb11e63c3d472b21c0b71b5c4407c4
+2475828048,wordsmith ai|account executive - enterprise,Wordsmith AI,Account Executive - Enterprise,hPnPC3zePQmrLfu1C,2026-11-22,08eb2e1cb0ac4f2ff9b0744ec26ffdb7
+2471697839,"cofense|account executive, emea, french or german speaker (uk remote)",COFENSE,"Account Executive, EMEA, French or German Speaker (UK Remote)",hPnPC3zePQmrLfu1C,2026-11-22,c6d4b83f256ce84717733946dd990dfd
+2471275885,chubb fire and security|strategic account manager,Chubb Fire & Security Group,Strategic Account Manager,hPnPC3zePQmrLfu1C,2026-11-22,854fb24404c12039142f393f0e81fbe1
+2478316783,johnson controls|global strategic accounts manager pharma,Johnson Controls,Global Strategic Accounts Manager Pharma,hPnPC3zePQmrLfu1C,2026-11-22,90f35bd0b391015c9918ae058e92478a
+2472041638,orbital industries|founding sales (science),Orbital Industries,Founding Sales (Science),hPnPC3zePQmrLfu1C,2026-11-22,7dfb5ad0fe6ae6d3d89d45c8a0abd5d9
+2470084044,hearst|account director,Hearst,Account Director,hPnPC3zePQmrLfu1C,2026-11-22,de58a5b36e8fe9d271655ae8c626ee52
+2479238036,inside source|senior global account manager,Inside Source,Senior Global Account Manager,hPnPC3zePQmrLfu1C,2026-11-22,55a8948f1250c6e4a81a182a002d5987
+2470266205,toppan packaging americas|strategic account & business development manager,TOPPAN Packaging Americas,Strategic Account & Business Development Manager,hPnPC3zePQmrLfu1C,2026-11-22,4369d1ab30684d060b0f453d9d915bcf
+2474057723,first intuition|account director,First Intuition,Account Director,hPnPC3zePQmrLfu1C,2026-11-22,11cb462c6f6b0810fc8b24ea290e951e
+2479318627,etex|area sales lead,Etex,Area Sales Lead,hPnPC3zePQmrLfu1C,2026-11-22,385bd369b0dc10cdfbf0e858308460a3
+2471732126,"valvoline global|senior market activation lead - strategic accounts, europe",Valvoline Global,"Senior Market Activation Lead - Strategic Accounts, Europe",hPnPC3zePQmrLfu1C,2026-11-22,b55086c4e6a59215aa9e21ff877b5687
+2471297885,jonas event technology|head of sales,Jonas Event Technology,Head of Sales,hPnPC3zePQmrLfu1C,2026-11-22,855b400d4931e0c98710e0fd59bae1ef
+2472101632,mobileaction|senior account executive,MobileAction,Senior Account Executive,hPnPC3zePQmrLfu1C,2026-11-22,dbf3b85e8cf3e5e0891f2f324b421208
+2470064102,prolific|enterprise account executive,Prolific,Enterprise Account Executive,hPnPC3zePQmrLfu1C,2026-11-22,7c817b400b142b7a27d970437ce2284f
+2478200407,publicis groupe holdings b v|performance planning account director,Publicis Groupe Holdings B.V,Performance Planning Account Director,hPnPC3zePQmrLfu1C,2026-11-22,ada6d8db747724bf0bddcbbb19178edd
+2471678581,publicis groupe holdings b v|planning account director,Publicis Groupe Holdings B.V,Planning Account Director,hPnPC3zePQmrLfu1C,2026-11-22,4fc574267b3af27b2cd71c65419b8eea
+2471217441,publicis groupe holdings b v|affiliates account director,Publicis Groupe Holdings B.V,Affiliates Account Director,hPnPC3zePQmrLfu1C,2026-11-22,26591727768cbf14e3f58859a2c175c3
+2474238210,speira|head of sales (m/f/x) nordics & uk,Speira,Head of Sales (m/f/x) Nordics & UK,hPnPC3zePQmrLfu1C,2026-11-22,5638eae9bf717b64c882d89934f77b53
+2478275135,twilio|new business account executive (hebrew speaker),Twilio,New Business Account Executive (Hebrew speaker),hPnPC3zePQmrLfu1C,2026-11-22,525f8d2e3b240f1023be31b9cc387787
