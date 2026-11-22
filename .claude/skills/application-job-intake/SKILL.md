@@ -223,6 +223,13 @@ which rows Andrey deleted and which were already seen. Then report:
   Verdict as a small confusion table.
 - **Backfill runs** (timeRange 6m): same steps. `timeRange` filters on date_created, not date_posted, so old postings
   come back. Keep them; Andrey filters later.
+- **Searches outside the UK** (2026-11-22, run Gbj0R7MZlbkJOikJy: France and Paris). Andrey's instruction: skip where
+  French fluency is required. Before screening, split out every row whose JD requires the local language, is written
+  in it, or names it in the title (`fluent`, `native`, `courant`, `maîtrise` near the language; read each match, since
+  "French a plus" also matches). Record them in `dropped_<run>.json` with the reason, so `seen-add` puts them on the
+  seen list, and leave them unwritten. Tell the screeners in their prompt that the country is not a location gap for
+  that run. The machine Fit Score docks non-UK roles (its location points only reward the UK), so rank by Triage.
+  Write only non-Skips above 60, as for the big LinkedIn run.
 - **Big LinkedIn runs** (2026-11-22, run RQzWJyrDYNof2RTr9: 1,000 rows, 6 months, no industry exclusions). Most rows are
   recruitment-agency postings (hard fail "Staffing poster"). Andrey's instruction for that run: screen only rows without
   a hard fail and outside the title rule, and write only screened rows that are not Skip and score above 60. Merge with
