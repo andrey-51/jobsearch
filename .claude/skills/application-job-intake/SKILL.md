@@ -14,7 +14,7 @@ Promoting rows into the Roles tracker is a different skill (application-role-int
 |---|---|
 | Role Intake data source (the only write target) | `collection://441379e4-d36a-4d53-b834-57242e0dafb3` |
 | Roles (read-only, never write) | `collection://29ca5e5b-5444-4136-ae62-7af42e552cbf` |
-| Apify actor | Fantastic Jobs `s3dtSTZSZWFtAVLn5`, pay per event (about USD 0.012 per job plus USD 0.01 per run start) |
+| Apify actor | Fantastic Jobs `s3dtSTZSZWFtAVLn5` (career sites, Feed = ATS), pay per event (about USD 0.012 per job plus USD 0.01 per run start). Since 2026-11-22 also the Fantastic Jobs LinkedIn actor `vIGxjRrHqDTPuE6M4` (same fields, `source` = linkedin, Feed = LinkedIn) |
 | Helper | `scripts/intake.py` (fetch, prepare, live-sql, dedup, batches, final, show, verify, ledger-add) |
 | Scoring and page bodies | `scripts/pipeline.py` (rubric v1.1), `scripts/bodies.py` |
 | Direct REST writer | `scripts/nwrite.py` (needs a working `Notion_KEY`) |
@@ -76,6 +76,10 @@ Commission". A misfired row scores 0,
 but the ATS screen still judges it properly.
 
 ### 2. Dedupe against Notion
+
+When the Notion token works, the simplest path is `I live-rest <run>`: it reads every live row's job id and dedup key
+over the REST API (read-only, about 13 requests) and writes `live_<run>.txt` directly. Use it for big runs (1,000 rows
+on 2026-11-22). Otherwise use the connector queries:
 
 ```
 I live-sql <run>
@@ -211,6 +215,14 @@ Commit `data/ledger.csv`, so the next session can still tell which rows Andrey d
   Verdict as a small confusion table.
 - **Backfill runs** (timeRange 6m): same steps. `timeRange` filters on date_created, not date_posted, so old postings
   come back. Keep them; Andrey filters later.
+- **Big LinkedIn runs** (2026-11-22, run RQzWJyrDYNof2RTr9: 1,000 rows, 6 months, no industry exclusions). Most rows are
+  recruitment-agency postings (hard fail "Staffing poster"). Andrey's instruction for that run: screen only rows without
+  a hard fail and outside the title rule, and write only screened rows that are not Skip and score above 60. Merge with
+  `I final <run>`, keep `final_all_<run>.json`, filter `final_<run>.json` to those rows, then write, verify and
+  ledger-add as usual. LinkedIn copies of job-board roles often carry another company spelling ("Aircall" vs
+  "Aircall.io, Inc.") or a third party's name (Wello Worldwide reposting Emplifi); dedup catches the first
+  ("same role as a live row (other spelling)"), but reposts under another company and reworded titles (HASH "Sales Lead"
+  vs "Enterprise Sales Lead") need a look at the top rows before writing.
 - **Refresh `data/roles.tsv`** when Roles has changed a lot: read Company, Role Title and the page url from Roles with a SQL
   query (read-only) and rewrite the file. It only drives the Cross-DB match note on pages.
 
