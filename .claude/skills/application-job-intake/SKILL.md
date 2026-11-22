@@ -43,7 +43,7 @@ These come from Andrey's standing instructions and from mistakes in earlier runs
   `LANGUAGE:` or `PUBLIC/DEFENCE/SECURITY:` so it can be filtered in Notion. Filtering on "contains PUBLIC/DEFENCE" also
   catches rows tagged before security was added. The screen brief tells screeners to apply it, and `intake.py final`
   enforces it: tagged reasons are forced to Skip, and the rule is forced on titles that name a language, a public or
-  defence patch, or security, and on companies whose industry is "Computer and Network Security". A language that is only
+  defence patch, or security, and on companies whose industry is "Computer and Network Security" or "Security and Investigations" (physical security counts as security since 2026-11-22). A language that is only
   "a plus", or security listed as one option among several, does not count. List these rows separately in the report.
   The rule applies to new batches only. Rows written before 2026-10-12 keep their untagged reasons, and Andrey chose
   not to retag them, so do not apply it to older rows unless he asks.
@@ -110,7 +110,7 @@ Ask whether to write and screen. Wait for the answer.
 **Rule Skips before screening (when Andrey asks, as on 2026-11-01: "move Skips to Intake Status Skipped and run the
 ATS screen for the rest").** Decide the language and public/defence/security Skips first and do not screen them.
 They are the titles the rule catches (`hard_skip` in intake.py: a language or "speaking" in the title, a public,
-defence, government, NHS or security patch, or the industry "Computer and Network Security"). Add titles that name a
+defence, government, NHS or security patch, or the industry "Computer and Network Security" or "Security and Investigations"). Add titles that name a
 language market (DACH, Nordics, France and so on) only when the JD makes that language required. Coursera DACH said
 German was "a plus, but not essential" and was screened. Write them to `<work dir>/screen/verdicts_<run>_rules.txt`
 before running `batches`, one line each: `Kxxx|-|Skip|TAG reason; not screened.`. The key is `K` plus the row's

@@ -51,7 +51,7 @@ can filter on it in Notion:
 | Tag | When | Example reason |
 |---|---|---|
 | `LANGUAGE:` | The role requires a language other than English: the title says "X speaking", "bilingual" or names a language market, or the JD makes fluency required | `LANGUAGE: Italian fluency required for the Italian market; strong AI SaaS fit otherwise.` |
-| `PUBLIC/DEFENCE/SECURITY:` | The role sells into public sector or defence (central or local government, defence, blue light, NHS and public health, public education, or a title or patch naming one of these), OR it is a security or cyber sale: the product is cybersecurity or security (endpoint, network, identity and IAM, SIEM and SOC, application, cloud or data security, managed security services), the company is a security vendor (industry "Computer and Network Security"), or the JD requires security or cyber selling experience or expertise | `PUBLIC/DEFENCE/SECURITY: Territory is UK central government and blue light accounts.` or `PUBLIC/DEFENCE/SECURITY: Cybersecurity platform sale; security market expertise required.` |
+| `PUBLIC/DEFENCE/SECURITY:` | The role sells into public sector or defence (central or local government, defence, blue light, NHS and public health, public education, or a title or patch naming one of these), OR it is a security or cyber sale: the product is cybersecurity or security (endpoint, network, identity and IAM, SIEM and SOC, application, cloud or data security, managed security services) or physical security (fire and security systems, access control, video surveillance, alarm monitoring, guarding; Andrey, 2026-11-22), the company is a security vendor (industry "Computer and Network Security" or "Security and Investigations"), or the JD requires security or cyber selling experience or expertise | `PUBLIC/DEFENCE/SECURITY: Territory is UK central government and blue light accounts.` or `PUBLIC/DEFENCE/SECURITY: Cybersecurity platform sale; security market expertise required.` |
 
 - Score these rows 55 or lower and set the verdict to Skip.
 - Keep the rest of the reason short, and mention the underlying fit if it is otherwise strong, so a later re-read is easy.
@@ -62,6 +62,9 @@ can filter on it in Notion:
 - Security counts when it is the product or a required expertise. It does not count when it appears only as one option
   among several ("IT, security or operations software"), as "a plus" or "highly preferred", or in the company's
   marketing ("faster and more secure"). Data backup and resilience vendors count only when the JD requires security selling.
+- Physical security counts like cyber (Chubb Fire & Security and Verkada, 2026-11-22). Emergency communications, critical
+  event management and health and safety software (AlertMedia, Noggin, HSI) are not security on their own: judge them
+  normally unless the JD makes security selling or a security clearance required.
 
 Judgement rules learned from earlier runs:
 - The FLAGS line is a regex scan of the full JD; the JD text you see is cut at 2,400 characters. Treat a flagged

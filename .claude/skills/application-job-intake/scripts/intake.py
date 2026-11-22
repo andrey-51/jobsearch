@@ -279,7 +279,7 @@ TAGS = ("LANGUAGE:", PDS, "PUBLIC/DEFENCE:")
 TITLE_LANG = re.compile(rf"\b({LANGS}|Italian|Bilingual|Multilingual)\b|speaking", re.I)
 TITLE_PUBLIC = re.compile(r"public sector|\bgovernment\b|central gov|local gov|\bdefen[cs]e\b|blue light|\bNHS\b|"
                           r"\bMoD\b|ministry|\bfederal\b|law enforcement|\bpolice\b|\bsecurity\b|cyber|\bIAM\b|\bidentity\b|\bSOC\b", re.I)
-SECURITY_INDUSTRY = re.compile(r"computer and network security", re.I)
+SECURITY_INDUSTRY = re.compile(r"computer and network security|security and investigations", re.I)  # physical security added 2026-11-22
 
 
 def hard_skip(k, r, vd, sc, why):
