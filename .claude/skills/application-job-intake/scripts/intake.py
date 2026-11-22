@@ -4,6 +4,7 @@
   fetch    <run>                     download dataset, run metadata and actor input; print a summary
   prepare  <run> --date YYYY-MM-DD   score (pipeline.py) and build page bodies (bodies.py)
   live-sql <run>                     print the SQL that fetches only the live rows this batch could collide with
+  live-rest <run>                    read all live rows' job ids and dedup keys over the REST API (needs Notion_KEY)
   dedup    <run> --live FILE         split the batch against live Role Intake rows and the ledger
   batches  <run> [--size N]          write screening batch files for the ATS screen
   final    <run>                     merge screen verdicts into the rows to write; validate them
@@ -127,6 +128,33 @@ def relevant(a):
     ledger = read_ledger()
     rel = {s: r for s, r in ledger.items() if s in sids or r["dedup_key"] in keys or r.get("jd_hash") in jds}
     return rows, sids | set(rel), keys, rel
+
+
+def cmd_live_rest(a):
+    """Read every live Role Intake row's Source Job ID and Dedup Key through the Notion REST API (read-only) and write
+    them as live_<run>.txt for dedup. Needs a working Notion_KEY; used for big runs where live-sql would need many
+    connector calls (2026-11-22: 1,000 rows)."""
+    tok = os.environ["Notion_KEY"]
+    ds = "441379e4-d36a-4d53-b834-57242e0dafb3"
+    txt = lambda p: "".join(t.get("plain_text", "") for t in (p or {}).get("rich_text", []))
+    out, cursor = [], None
+    while True:
+        body = {"page_size": 100, **({"start_cursor": cursor} if cursor else {})}
+        req = urllib.request.Request(f"https://api.notion.com/v1/data_sources/{ds}/query", data=json.dumps(body).encode(),
+                                     method="POST", headers={"Authorization": f"Bearer {tok}", "Notion-Version": "2025-09-03",
+                                                             "Content-Type": "application/json", "User-Agent": UA})
+        with urllib.request.urlopen(req, timeout=120) as r:
+            res = json.loads(r.read().decode())
+        for pg in res["results"]:
+            pr = pg["properties"]
+            sid = txt(pr.get("Source Job ID"))
+            if sid:
+                out.append(f"{sid}~~{txt(pr.get('Dedup Key'))}")
+        if not res.get("has_more"):
+            break
+        cursor = res["next_cursor"]
+    open(path(a, f"live_{a.run}.txt"), "w").write("^^".join(out) + "\n")
+    print(f"live rows with a job id: {len(out)} -> live_{a.run}.txt")
 
 
 def cmd_live_sql(a):
@@ -392,7 +420,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dir", default=os.environ.get("INTAKE_DIR", "./intake_work"))
     sp = ap.add_subparsers(dest="cmd", required=True)
-    for name in ["fetch", "ledger-add", "live-sql"]:
+    for name in ["fetch", "ledger-add", "live-sql", "live-rest"]:
         sp.add_parser(name).add_argument("run")
     p = sp.add_parser("final"); p.add_argument("run")
     p.add_argument("--skip-status", action="store_true", help="also set Intake Status = Skipped on screened Skips")
@@ -403,7 +431,7 @@ def main():
     p = sp.add_parser("verify"); p.add_argument("run"); p.add_argument("--got", required=True)
     a = ap.parse_args()
     {"fetch": cmd_fetch, "prepare": cmd_prepare, "dedup": cmd_dedup, "batches": cmd_batches,
-     "final": cmd_final, "live-sql": cmd_live_sql, "show": cmd_show, "verify": cmd_verify, "ledger-add": cmd_ledger_add}[a.cmd](a)
+     "final": cmd_final, "live-sql": cmd_live_sql, "live-rest": cmd_live_rest, "show": cmd_show, "verify": cmd_verify, "ledger-add": cmd_ledger_add}[a.cmd](a)
 
 
 if __name__ == "__main__":

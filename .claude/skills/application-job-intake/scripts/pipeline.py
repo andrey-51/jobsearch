@@ -357,7 +357,7 @@ for r in rows:
     prepared.append({
         "source_id": r.get("id"),
         "Role": title, "Company": org,
-        "Feed": "ATS",
+        "Feed": "LinkedIn" if r.get("source") == "linkedin" else "ATS",  # LinkedIn jobs actor vIGxjRrHqDTPuE6M4 (2026-11-22)
         "Job URL": r.get("url") or r.get("apply_url") or "",
         "Source Job ID": str(r.get("id") or ""),
         "Location": loc_string(r),
