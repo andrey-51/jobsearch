@@ -68,7 +68,8 @@ I prepare <run> --date <today YYYY-MM-DD>
 ```
 
 `fetch` prints status, cost, the date_created spread and the actor input. Note the timeRange and the number of
-excluded industries. `prepare` prints machine verdicts and hard fails. It lists every "Management track",
+excluded industries. If Andrey gives a dataset id instead of a run id (2026-11-22: 0QxyEZKGox1VT4vlQ), `fetch`
+resolves it to its run and prints the run id; use that run id for every later step and in the ledger. `prepare` prints machine verdicts and hard fails. It lists every "Management track",
 "Wrong location/US leak" and "FTC/contract" hard fail with its evidence line. Read those: the rules misfire on phrases
 like "team of Account Executives", "headquartered in California", US salary bands inside UK postings or "Federal Trade
 Commission". A misfired row scores 0,

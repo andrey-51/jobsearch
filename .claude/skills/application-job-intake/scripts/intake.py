@@ -13,7 +13,7 @@
 
 Secrets come from the environment (APIFY_TOKEN, Notion_KEY) and are never printed or written.
 """
-import argparse, collections, csv, hashlib, json, os, re, shutil, subprocess, sys, urllib.request
+import argparse, collections, csv, hashlib, json, os, re, shutil, subprocess, sys, urllib.error, urllib.request
 
 SKILL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCRIPTS = os.path.join(SKILL, "scripts")
@@ -37,7 +37,16 @@ def get(url):
 def cmd_fetch(a):
     tok = os.environ["APIFY_TOKEN"]
     base = f"https://api.apify.com/v2/actor-runs/{a.run}"
-    meta = get(f"{base}?token={tok}")["data"]
+    try:
+        meta = get(f"{base}?token={tok}")["data"]
+    except urllib.error.HTTPError as e:
+        # Andrey sometimes pastes the dataset id instead of the run id (2026-11-22): resolve it to its run.
+        if e.code != 404:
+            raise
+        run = get(f"https://api.apify.com/v2/datasets/{a.run}?token={tok}")["data"]["actRunId"]
+        print(f"{a.run} is a dataset id; it belongs to run {run}. Use {run} for every later step.")
+        a.run, base = run, f"https://api.apify.com/v2/actor-runs/{run}"
+        meta = get(f"{base}?token={tok}")["data"]
     items = get(f"{base}/dataset/items?format=json&clean=true&token={tok}")
     inp = get(f"https://api.apify.com/v2/key-value-stores/{meta['defaultKeyValueStoreId']}/records/INPUT?token={tok}")
     json.dump(items, open(path(a, f"run_{a.run}.json"), "w"))
