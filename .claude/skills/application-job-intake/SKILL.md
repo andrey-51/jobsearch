@@ -19,6 +19,7 @@ Promoting rows into the Roles tracker is a different skill (application-role-int
 | Scoring and page bodies | `scripts/pipeline.py` (rubric v1.1), `scripts/bodies.py` |
 | Direct REST writer | `scripts/nwrite.py` (needs a working `Notion_KEY`) |
 | Write ledger | `data/ledger.csv`: every job id ever written. It is the only record of rows Andrey deleted, so commit it after every run |
+| Seen list | `data/seen.csv`: rows a run fetched but did not write (since 2026-11-22), with the outcome; dedup skips them later |
 | Roles cross-check | `data/roles.tsv` (Company, Role, URL), a snapshot of Roles used to mark Cross-DB matches |
 | Screen brief | `references/screen_brief.md` |
 | Connector writer brief | `references/writer_brief.md` |
@@ -192,9 +193,16 @@ has no Assessment section and its body is intact.
 
 ```
 I ledger-add <run>
+I seen-add <run>
 ```
 
-Commit `data/ledger.csv`, so the next session can still tell which rows Andrey deleted. Then report:
+`seen-add` records in `data/seen.csv` every new row of the run that was not written (screened below the bar, a Skip
+that was not written, a hard fail that was not screened, a rule Skip, or a repeat dropped by hand, with the reason taken
+from `dropped_<run>.json`). Dedup then reports those roles as "seen before, not written" in later runs, matched by job id,
+dedup key, JD fingerprint or loose key, so they are not fetched into the write set or screened again (Andrey, 2026-11-22).
+Before running it, put every repeat you dropped by hand into `dropped_<run>.json` (sid to reason). To let a role back
+in, delete its line from `seen.csv`. Commit `data/ledger.csv` and `data/seen.csv`, so the next session can still tell
+which rows Andrey deleted and which were already seen. Then report:
 
 | Section | Content |
 |---|---|

@@ -11,6 +11,7 @@
   show     <run> <i> <j>             print connector-ready properties and body for rows i..j-1
   verify   <run> --got FILE          compare what Notion holds with what was intended
   ledger-add <run>                   record the written rows in data/ledger.csv
+  seen-add <run>                     record the new rows that were not written in data/seen.csv, so later runs skip them
 
 Secrets come from the environment (APIFY_TOKEN, Notion_KEY) and are never printed or written.
 """
@@ -19,6 +20,7 @@ import argparse, collections, csv, hashlib, json, os, re, shutil, subprocess, sy
 SKILL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCRIPTS = os.path.join(SKILL, "scripts")
 LEDGER = os.path.join(SKILL, "data", "ledger.csv")
+SEEN = os.path.join(SKILL, "data", "seen.csv")   # rows a run looked at but did not write (Andrey, 2026-11-22)
 ROLES_TSV = os.path.join(SKILL, "data", "roles.tsv")
 UA = "Mozilla/5.0 (compatible; intake-bot)"   # generic on purpose: never a name or email
 
@@ -103,6 +105,17 @@ def read_ledger():
     if not os.path.exists(LEDGER):
         return {}
     return {row["sid"]: row for row in csv.DictReader(open(LEDGER))}
+
+
+SEEN_COLS = ["sid", "dedup_key", "company", "role", "run", "seen_on", "jd_hash", "outcome"]
+
+
+def read_seen():
+    """Rows an earlier run fetched but did not write: screened below the bar, failed a hard rule, a rule Skip, or dropped
+    as a repeat. Dedup skips them by job id, dedup key, JD fingerprint or loose key. Delete a line to let a role back in."""
+    if not os.path.exists(SEEN):
+        return {}
+    return {row["sid"]: row for row in csv.DictReader(open(SEEN))}
 
 
 def read_live(f):
@@ -206,6 +219,10 @@ def cmd_dedup(a):
     live_jd = {r.get("jd_hash") for s, r in ledger.items() if s in live} - {None, ""}
     deleted_jd = {r.get("jd_hash") for r in deleted.values()} - live_jd - {None, ""}
     live_loose = {loose_key(k) for k in live_keys} - {None}
+    prior = read_seen()
+    prior_keys = {r["dedup_key"] for r in prior.values()} - {""}
+    prior_jds = {r.get("jd_hash") for r in prior.values()} - {None, ""}
+    prior_loose = {loose_key(k) for k in prior_keys} - {None}
     rows = json.load(open(path(a, f"towrite_all_{a.run}.json")))
     cat = collections.defaultdict(list)
     seen, seen_jd, seen_loose = set(), set(), set()
@@ -220,6 +237,8 @@ def cmd_dedup(a):
         elif j and j in deleted_jd: c = "same JD as a deleted row"
         elif j and j in live_jd: c = "same JD as a live row"
         elif lk and lk in live_loose: c = "same role as a live row (other spelling)"
+        elif s in prior or k in prior_keys or (j and j in prior_jds) or (lk and lk in prior_loose):
+            c = "seen before, not written"
         elif r.get("Duplicate") or k in seen: c = "in-batch duplicate"
         elif j and j in seen_jd: c = "in-batch duplicate (same JD, other title or board)"
         elif lk and lk in seen_loose: c = "in-batch duplicate (other spelling)"
@@ -234,9 +253,11 @@ def cmd_dedup(a):
     new = sorted(cat["new"], key=lambda r: (-r["Fit Score"], r["Company"]))
     json.dump(new, open(path(a, f"towrite_{a.run}.json"), "w"), ensure_ascii=False)
     json.dump({c: [r["Source Job ID"] for r in v] for c, v in cat.items()}, open(path(a, f"dedup_{a.run}.json"), "w"))
-    print(f"live rows that touch this batch {len(live)} | ledger rows that touch it {len(ledger)} | of those deleted by user {len(deleted)}")
+    print(f"live rows that touch this batch {len(live)} | ledger rows that touch it {len(ledger)} | of those deleted by user {len(deleted)}"
+          f" | seen list {len(prior)}")
     for c in ["new", "same role as a live row", "same role as a live row (other spelling)", "same role as a deleted row",
-              "same JD as a live row", "same JD as a deleted row", "posting already live", "posting deleted by user",
+              "same JD as a live row", "same JD as a deleted row", "seen before, not written", "posting already live",
+              "posting deleted by user",
               "in-batch duplicate", "in-batch duplicate (same JD, other title or board)", "in-batch duplicate (other spelling)"]:
         v = cat.get(c, [])
         print(f"{c:28s} {len(v):4d} {dict(collections.Counter(r['Machine Verdict'] for r in v))}")
@@ -435,11 +456,45 @@ def cmd_ledger_add(a):
     print(f"ledger +{len(new)} rows -> {len(ledger) + len(new)}")
 
 
+def cmd_seen_add(a):
+    """Record every new row of the run that is not in the ledger: what happened to it goes in the outcome column."""
+    new_ids = json.load(open(path(a, f"dedup_{a.run}.json"))).get("new", [])
+    allr = {r["Source Job ID"]: r for r in json.load(open(path(a, f"towrite_all_{a.run}.json")))}
+    ledger, seen = read_ledger(), read_seen()
+    fin_file = path(a, f"final_all_{a.run}.json")
+    fin_file = fin_file if os.path.exists(fin_file) else path(a, f"final_{a.run}.json")
+    fin = {r["Source Job ID"]: r for r in json.load(open(fin_file))} if os.path.exists(fin_file) else {}
+    drop_file = path(a, f"dropped_{a.run}.json")
+    dropped = json.load(open(drop_file)) if os.path.exists(drop_file) else {}
+    add = []
+    for sid in new_ids:
+        if sid in ledger or sid in seen or sid not in allr:
+            continue
+        r = allr[sid]
+        if sid in dropped:
+            out = "dropped: " + dropped[sid][:150]
+        elif sid in fin:
+            out = f"screened {fin[sid]['Triage']} {fin[sid]['ATS Score'] if fin[sid]['ATS Score'] is not None else '-'}, not written"
+        elif r["Hard Fail Reason"] != "None":
+            out = f"hard fail {r['Hard Fail Reason']}, not screened"
+        else:
+            out = "not screened (rule Skip or left out)"
+        add.append([sid, r["Dedup Key"], r["Company"], r["Role"], a.run, r["Fetched"], jd_hash(r) or "", out])
+    exists = os.path.exists(SEEN)
+    with open(SEEN, "a", newline="") as f:
+        w = csv.writer(f)
+        if not exists:
+            w.writerow(SEEN_COLS)
+        w.writerows(add)
+    print(f"seen +{len(add)} rows -> {len(seen) + len(add)} "
+          f"{dict(collections.Counter(re.sub(r' -?[0-9]+$', '', x[7].split(',')[0].split(':')[0]) for x in add))}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dir", default=os.environ.get("INTAKE_DIR", "./intake_work"))
     sp = ap.add_subparsers(dest="cmd", required=True)
-    for name in ["fetch", "ledger-add", "live-sql", "live-rest"]:
+    for name in ["fetch", "ledger-add", "seen-add", "live-sql", "live-rest"]:
         sp.add_parser(name).add_argument("run")
     p = sp.add_parser("final"); p.add_argument("run")
     p.add_argument("--skip-status", action="store_true", help="also set Intake Status = Skipped on screened Skips")
@@ -450,7 +505,8 @@ def main():
     p = sp.add_parser("verify"); p.add_argument("run"); p.add_argument("--got", required=True)
     a = ap.parse_args()
     {"fetch": cmd_fetch, "prepare": cmd_prepare, "dedup": cmd_dedup, "batches": cmd_batches,
-     "final": cmd_final, "live-sql": cmd_live_sql, "live-rest": cmd_live_rest, "show": cmd_show, "verify": cmd_verify, "ledger-add": cmd_ledger_add}[a.cmd](a)
+     "final": cmd_final, "live-sql": cmd_live_sql, "live-rest": cmd_live_rest, "show": cmd_show, "verify": cmd_verify, "ledger-add": cmd_ledger_add,
+     "seen-add": cmd_seen_add}[a.cmd](a)
 
 
 if __name__ == "__main__":
